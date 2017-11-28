@@ -2,7 +2,6 @@
 
 require('clases/abm-usuarios.class.php');
 require('clases/GSUsuario.class.php');
-//error_reporting(0);
 
 if($_POST)
 {
