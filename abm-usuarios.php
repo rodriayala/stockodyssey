@@ -148,7 +148,7 @@ if (!isset($todo_ok))
                     ?>	
                     <tr>
 	                    <th><div class="alert alert-danger">
-						  <strong>ATENCION!</strong> Este campo tiene que estar completo.
+						  <strong>¡ATENCION!</strong> Este campo tiene que estar completo.
 						</div></th>	
 						<th></th>
 					</tr>	
@@ -165,7 +165,7 @@ if (!isset($todo_ok))
                     ?>	
                     <tr>
 	                    <th><div class="alert alert-danger">
-						  <strong>ATENCION!</strong> Este campo tiene que estar completo.
+						  <strong>¡ATENCION!</strong> Este campo tiene que estar completo.
 						</div></th>	
 						<th></th>
 					</tr>	
@@ -181,7 +181,7 @@ if (!isset($todo_ok))
                     ?>	
                     <tr>
 	                    <th><div class="alert alert-danger">
-						  <strong>ATENCION!</strong> Este campo tiene que estar completo.
+						  <strong>¡ATENCION!</strong> Este campo tiene que estar completo.
 						</div></th>	
 						<th></th>
 					</tr>	
@@ -198,7 +198,7 @@ if (!isset($todo_ok))
                     ?>	
                     <tr>
 	                    <th><div class="alert alert-danger">
-						  <strong>ATENCION!</strong> Este campo tiene que estar completo.
+						  <strong>¡ATENCION!</strong> Este campo tiene que estar completo.
 						</div></th>	
 						<th></th>
 					</tr>	
