@@ -46,13 +46,30 @@ $abmusuario=new ABMUsuario;
 
 $result = $abmusuario->getAllUsuario();
 
+$deleteOK = $_GET['deleteOK'];
 
-if (!isset($respuestaAlta)) 
+if (!isset($deleteOK))
 {
-    $respuestaAlta = 0;	
+    $deleteOK = 0;
 }
 
-$respuestaBaja = 0;
+if (!isset($insertarOK))
+{
+    $insertarOK = 0;
+}
+
+if (!isset($updateOK))
+{
+    $updateOK = 0;
+}
+if (!isset($mal_nombre))
+{
+    $mal_nombre = 0;
+}
+if (!isset($todo_ok))
+{
+    $todo_ok = 0;
+}
 ?>
 <!DOCTYPE html>
 <html>
@@ -65,19 +82,25 @@ $respuestaBaja = 0;
 </head>
     <body>
 	<script type="text/javascript">
-		var respuestaAlta = <?php echo $respuestaAlta; ?>;
-		var respuestaBaja = <?php echo $respuestaBaja = $_GET['respuestaBaja']; ?>;
-
+		var insertarOK = <?php echo $insertarOK; ?>;
 		
-		if(respuestaAlta==true)
+		if(insertarOK==true)
 		{
 			alert("Usuario ingresado correctamente.");
 		}
-		if(respuestaBaja==true)
+		
+		var deleteOK = <?php echo $deleteOK; ?>;
+
+		if(deleteOK==true)
 		{
 			alert("Usuario borrado correctamente.");
 		}
-		
+	
+		var updateOK = <?php echo $updateOK; ?>;
+		if(updateOK==true)
+		{
+			alert("Usuario modificado correctamente.");
+		}
 	</script>
         <form action="" method="post" id="altaForm">
 	        <table border="1" >
@@ -113,7 +136,10 @@ $respuestaBaja = 0;
                         <th>Password:</th><th><input type="password" id="password_usuario" name="password_usuario" maxlength="100"
                         	tabindex="3" value="<?php echo $password; ?>"></th>
                     <tr>
-                            <th colspan="2"><input type="submit" value="Alta" name="alta" id="alta" ></th>
+                            <th colspan="2">
+                            	<input type="submit" value="Alta" name="alta" id="alta"/>
+                            	<input type="reset" value="limpiar" name="limpiar" id="limpiar"/>
+                            </th>
                     </tr>
                     
             </table>
@@ -153,7 +179,6 @@ $respuestaBaja = 0;
 							</a>
 						</td>
 					</tr>
-				
 				<?php 
 					}
 				?>
