@@ -21,11 +21,8 @@ $id=$_GET['id_usuario'];
 			$gsusuario->setPassword($password);
 
 			$abmusuario=new ABMUsuario();
-			$respuestaModificacion = $abmusuario->updateUsuario($gsusuario,$id);
+			$updateOK = $abmusuario->updateUsuario($gsusuario,$id);
 
-
-			header("location: abm-usuarios.php");
-			exit();
 		}
 	}
 	$abmusuario = new ABMUsuario();
@@ -34,14 +31,16 @@ $id=$_GET['id_usuario'];
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="ISO-8859-1">
+<meta charset="utf-8">
 <title>Formulario de Edición de Usuario</title>
 </head>
 <body>
 	<script>
-			if(respuestaModificacion==true)
+		var updateOK = <?php echo $updateOK; ?>;
+		if(updateOK==true)
 		{
-			alert("Usuario borrado correctamente.");
+			alert("Usuario modificado correctamente.");
+			window.location.href = 'abm-usuarios.php';
 		}
 	</script>
 
@@ -72,7 +71,7 @@ $id=$_GET['id_usuario'];
 		<tr>
 
 
-			<th colspan="2"><input type="submit" name="modificar" id="modificar" value="modificar" onclick="usuarioModificado()"></th>
+			<th colspan="2"><input type="submit" name="modificar" id="modificar" value="modificar"></th>
 
 		</tr>
 		<?php

@@ -123,12 +123,6 @@ if (!isset($todo_ok))
 
 		}
 	
-		var updateOK = <?php echo $updateOK; ?>;
-		if(updateOK==true)
-		{
-			alert("Usuario modificado correctamente.");
-			window.location.href = 'abm-usuarios.php';
-		}
 	</script>
         <form action="" method="post" id="altaForm">
 	        <table border="1" >
@@ -141,15 +135,21 @@ if (!isset($todo_ok))
                     <tr>
                         <th>Nombre:</th>
                         <th><input type="text" id="nombre_usuario" name="nombre_usuario" maxlength="250" tabindex="1" value="<?php echo $nombre; ?>"/>
-                        <?php if($mal_nombre==true) { ?>
-                        	<div class="alert alert-danger">
-						  		<strong>¡ATENCION!</strong> Este campo tiene que estar completo.
-							</div>
-							<?php } ?> </th>
                     <tr>
-
+                    <?php 
+                    	if($mal_nombre==true)
+                    	{
+                    ?>	
+                    <tr>
+	                    <th><div class="alert alert-danger">
+						  <strong>¡ATENCION!</strong> Este campo tiene que estar completo.
+						</div></th>	
+						<th></th>
+					</tr>	
+					<?php
+                    	}
+                    ?>
                         <th>E-mail:</th><th><input type="email" id="mail_usuario" name="mail_usuario" maxlength="100" tabindex="2" value="<?php echo $email; ?>"></th>
-
                     </tr>
                     <?php 
                     	if($mal_email==true)
@@ -199,7 +199,7 @@ if (!isset($todo_ok))
                     ?>
                             <th colspan="2">
                             	<input type="submit" value="Alta" name="alta" id="alta"/>
-                            	<input type="reset" value="limpiar" name="limpiar" id="limpiar"/>
+                            	<input type="reset" value="Limpiar la cola" name="limpiar" id="limpiar"/>
                             </th>
                     </tr>
                     

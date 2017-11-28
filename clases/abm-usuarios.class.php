@@ -57,9 +57,8 @@ class ABMUsuario {
     public function updateUsuario(GSUsuario $gsu, $id)
 
     {
-
+        $updateOK = false;
         $connection = conectar();
-
         $nombre=$gsu->getNombre();
         $mail=$gsu->getMail();
         $descripcion=$gsu->getDescripcion();
@@ -78,15 +77,16 @@ class ABMUsuario {
       if (!$result)
           {
             mysqli_close($connection);
-            $error = "Error: (" . mysql_errno() . ") " . mysql_error().")";
-            $respuesta = false;
-          }else{
-            $respuesta = true;
+            $error = "Error: (" . mysqli_errno() . ") " . mysqli_error().")";
+            exit();
           }
-            
-          
+          else
+          {
+            $updateOK = true;
+          }
+
             mysqli_close($connection);
-            return $respuesta;
+            return $updateOK;
     }
   
 	
