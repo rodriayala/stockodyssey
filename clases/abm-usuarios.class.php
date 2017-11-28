@@ -21,41 +21,37 @@ class ABMUsuario {
           {
             mysqli_close($connection);
             $error = "Error: (" . mysql_errno() . ") " . mysql_error().")";
-            $respuesta = false;
+            $insertarOK = false;
           }else{
-            $respuesta = true;
+            $insertarOK = true;
           }
-            
-          
+
             mysqli_close($connection);
-            return $respuesta;
+            return $insertarOK;
     }
     
     	
     public function deleteUsuario($id)
 
     {
-        
+        $deleteOK = false;
         $connection = conectar();   
-        
         $query = "DELETE FROM usuarios WHERE id_usuario = '$id'";
-
         $result = mysqli_query($connection,$query);
 
-   
       if (!$result)
       {
         mysqli_close($connection);
         $error = "Error: (" . mysql_errno() . ") " . mysql_error().")";
-        $deleteOK = false;
       }
       else
       {
-        mysqli_close($connection);
         $deleteOK = true;
+      }
+        mysqli_close($connection);
         return $deleteOK;
 
-      }
+      
     }
 	
     public function updateUsuario(GSUsuario $gsu, $id)

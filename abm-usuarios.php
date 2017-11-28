@@ -5,63 +5,59 @@ require('clases/GSUsuario.class.php');
 
 if($_POST)
 {
-	if ($_POST['alta']) 
-	{
-		$nombre = trim($_POST['nombre_usuario']);
-		$email=trim($_POST['mail_usuario']);
-		$descripcion=trim($_POST['descripcion_usuario']);
-		$password=trim($_POST['password_usuario']);
+    if ($_POST['alta']) {
+        $nombre = trim($_POST['nombre_usuario']);
+        $email = trim($_POST['mail_usuario']);
+        $descripcion = trim($_POST['descripcion_usuario']);
+        $password = trim($_POST['password_usuario']);
 
-		$todo_ok = true;
+        $todo_ok = true;
 
-		if(strlen($nombre)==0)
-		{
-			$mal_nombre = true;
-			$todo_ok = false;
-		}
-		if(strlen($email)==0)
-		{
-			$mal_email = true;
-			$todo_ok = false;
-		}
-		if(strlen($descripcion)==0)
-		{
-			$mal_descripcion = true;
-			$todo_ok = false;
-		}
-		if(strlen($password)==0)
-		{
-			$mal_password = true;
-			$todo_ok = false;
-		}
+        if (strlen($nombre) == 0) {
+            $mal_nombre = true;
+            $todo_ok = false;
+        }
+        if (strlen($email) == 0) {
+            $mal_email = true;
+            $todo_ok = false;
+        }
+        if (strlen($descripcion) == 0) {
+            $mal_descripcion = true;
+            $todo_ok = false;
+        }
+        if (strlen($password) == 0) {
+            $mal_password = true;
+            $todo_ok = false;
+        }
+        if ($todo_ok == true) {
+            $gsusuario = new GSUsuario();
+            $gsusuario->setNombre($nombre);
+            $gsusuario->setMail($email);
+            $gsusuario->setDescripcion($descripcion);
+            $gsusuario->setPassword($password);
 
-		if($todo_ok==true)
-		{
-			$gsusuario=new GSUsuario();
-			$gsusuario->setNombre($nombre);
-			$gsusuario->setMail($email);
-			$gsusuario->setDescripcion($descripcion);
-			$gsusuario->setPassword($password);
-			
-			$abmusuario = new ABMUsuario();
-			$respuestaAlta = $abmusuario->insertarUsuario($gsusuario);			
-		}
+            $abmusuario = new ABMUsuario();
+            $insertarOK = $abmusuario->insertarUsuario($gsusuario);
+        }
 
-		
-	}
-}else{
+    }
+}
+if ($_GET)
+{
+	$deleteOK=$_GET['deleteOK'];
+}
+
+else
+{
 	$nombre="";
 	$email="";
 	$descripcion="";
 	$password="";
 }
 
-
 $abmusuario=new ABMUsuario;
 
 $result = $abmusuario->getAllUsuario();
-
-$deleteOK = $_GET['deleteOK'];
 
 if (!isset($deleteOK))
 {
@@ -101,7 +97,7 @@ if (!isset($todo_ok))
 <!DOCTYPE html>
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <title>Formulario de Usuarios</title>
 <link rel="stylesheet" href="css/styles.css" >
 <link rel="stylesheet" href="css/bootstrap.min.css"  crossorigin="anonymous">
@@ -115,6 +111,7 @@ if (!isset($todo_ok))
 		{
 			alert("Usuario ingresado correctamente.");
 			window.location.href = 'abm-usuarios.php';
+
 		}
 		
 		var deleteOK = <?php echo $deleteOK; ?>;
@@ -142,22 +139,15 @@ if (!isset($todo_ok))
                     </thead>
 
                     <tr>
-                        <th>Nombre:</th><th><input type="text" id="nombre_usuario" name="nombre_usuario" maxlength="250" tabindex="1" value="<?php echo $nombre; ?>"/></th>
-                    </tr>
-                    <?php 
-                    	if($mal_nombre==true)
-                    	{
-                    ?>	
+                        <th>Nombre:</th>
+                        <th><input type="text" id="nombre_usuario" name="nombre_usuario" maxlength="250" tabindex="1" value="<?php echo $nombre; ?>"/>
+                        <?php if($mal_nombre==true) { ?>
+                        	<div class="alert alert-danger">
+						  		<strong>¡ATENCION!</strong> Este campo tiene que estar completo.
+							</div>
+							<?php } ?> </th>
                     <tr>
-	                    <th><div class="alert alert-danger">
-						  <strong>¡ATENCION!</strong> Este campo tiene que estar completo.
-						</div></th>	
-						<th></th>
-					</tr>	
-					<?php
-                    	}
-                    ?>
-                    <tr>
+
                         <th>E-mail:</th><th><input type="email" id="mail_usuario" name="mail_usuario" maxlength="100" tabindex="2" value="<?php echo $email; ?>"></th>
 
                     </tr>
