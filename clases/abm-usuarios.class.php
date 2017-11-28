@@ -43,18 +43,19 @@ class ABMUsuario {
         $result = mysqli_query($connection,$query);
 
    
-        if (!$result)
-          {
-            mysqli_close($connection);
-            $error = "Error: (" . mysql_errno() . ") " . mysql_error().")";
-            $respuesta = false;
-          }else{
-            $respuesta = true;
-          }
-            
-          
-            mysqli_close($connection);
-            return $respuesta;
+      if (!$result)
+      {
+        mysqli_close($connection);
+        $error = "Error: (" . mysql_errno() . ") " . mysql_error().")";
+        $deleteOK = false;
+      }
+      else
+      {
+        mysqli_close($connection);
+        $deleteOK = true;
+        return $deleteOK;
+
+      }
     }
 	
     public function updateUsuario(GSUsuario $gsu, $id)

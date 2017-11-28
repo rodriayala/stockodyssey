@@ -19,6 +19,21 @@ if($_POST)
 			$mal_nombre = true;
 			$todo_ok = false;
 		}
+		if(strlen($email)==0)
+		{
+			$mal_email = true;
+			$todo_ok = false;
+		}
+		if(strlen($descripcion)==0)
+		{
+			$mal_descripcion = true;
+			$todo_ok = false;
+		}
+		if(strlen($password)==0)
+		{
+			$mal_password = true;
+			$todo_ok = false;
+		}
 
 		if($todo_ok==true)
 		{
@@ -66,6 +81,18 @@ if (!isset($mal_nombre))
 {
     $mal_nombre = 0;
 }
+if (!isset($mal_email))
+{
+    $mal_email = 0;
+}
+if (!isset($mal_descripcion))
+{
+    $mal_descripcion = 0;
+}
+if (!isset($mal_password))
+{
+    $mal_password = 0;
+}
 if (!isset($todo_ok))
 {
     $todo_ok = 0;
@@ -94,6 +121,8 @@ if (!isset($todo_ok))
 		if(deleteOK==true)
 		{
 			alert("Usuario borrado correctamente.");
+			window.location.href = 'abm-usuarios.php';
+
 		}
 	
 		var updateOK = <?php echo $updateOK; ?>;
@@ -128,14 +157,54 @@ if (!isset($todo_ok))
                     ?>
                     <tr>
                         <th>E-mail:</th><th><input type="email" id="mail_usuario" name="mail_usuario" maxlength="100" tabindex="2" value="<?php echo $email; ?>"></th>
+
                     </tr>
+                    <?php 
+                    	if($mal_email==true)
+                    	{
+                    ?>	
+                    <tr>
+	                    <th><div class="alert alert-danger">
+						  <strong>ATENCION!</strong> Este campo tiene que estar completo.
+						</div></th>	
+						<th></th>
+					</tr>	
+					<?php
+                    	}
+                    ?>
                     <tr>
                         <th>Descripción:</th><th><input type="text" id="descripcion_usuario" name="descripcion_usuario" maxlength="100" tabindex="3" value="<?php echo $descripcion; ?>"></th>
                     <tr>
+                    	<?php 
+                    	if($mal_descripcion==true)
+                    	{
+                    ?>	
+                    <tr>
+	                    <th><div class="alert alert-danger">
+						  <strong>ATENCION!</strong> Este campo tiene que estar completo.
+						</div></th>	
+						<th></th>
+					</tr>	
+					<?php
+                    	}
+                    ?>
                 	<tr>
                         <th>Password:</th><th><input type="password" id="password_usuario" name="password_usuario" maxlength="100"
                         	tabindex="3" value="<?php echo $password; ?>"></th>
                     <tr>
+                    	<?php 
+                    	if($mal_password==true)
+                    	{
+                    ?>	
+                    <tr>
+	                    <th><div class="alert alert-danger">
+						  <strong>ATENCION!</strong> Este campo tiene que estar completo.
+						</div></th>	
+						<th></th>
+					</tr>	
+					<?php
+                    	}
+                    ?>
                             <th colspan="2">
                             	<input type="submit" value="Alta" name="alta" id="alta"/>
                             	<input type="reset" value="limpiar" name="limpiar" id="limpiar"/>
