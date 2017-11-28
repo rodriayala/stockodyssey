@@ -114,6 +114,7 @@ if (!isset($todo_ok))
 		if(insertarOK==true)
 		{
 			alert("Usuario ingresado correctamente.");
+			window.location.href = 'abm-usuarios.php';
 		}
 		
 		var deleteOK = <?php echo $deleteOK; ?>;
@@ -129,6 +130,7 @@ if (!isset($todo_ok))
 		if(updateOK==true)
 		{
 			alert("Usuario modificado correctamente.");
+			window.location.href = 'abm-usuarios.php';
 		}
 	</script>
         <form action="" method="post" id="altaForm">
