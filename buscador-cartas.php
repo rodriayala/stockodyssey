@@ -1,19 +1,35 @@
-<?php 
+<?php
 
 require('clases/abm-cartas.class.php');
 require('clases/GSCarta.class.php');
 
-$abmcarta=new ABMCarta;
-$result =$abmcarta->getAllCartas();
 
- ?>
+if ($_POST)
+{
+	if ($_POST['buscar'])
+	{
+		$nombre=$_POST['card_name'];
+		$abmcarta=new ABMCarta;
+		$result =$abmcarta->getCartaByNombre($nombre);
+		var_dump($result);
+	}
+}
 
+?>
 <!DOCTYPE html>
 <html>
 <head>
-	<title>Listado de Cartas</title>
+	<title>Buscador de Cartas</title>
 </head>
 <body>
+	<form action="" method="post">
+		<table>
+			<tr>
+				<td>Nombre</td>
+				<td><input type="text" name="card_name"/></td>
+			</tr>
+			<tr><td><input type="submit" name="buscar" value="Buscar"/></td></tr>
+		</table>
 	<table>
 		<thead>
 			<tr>
@@ -49,8 +65,8 @@ $result =$abmcarta->getAllCartas();
 			</tr>
 		<?php } ?>			
 		</tbody>
-
 	</table>
 
+	</form>
 </body>
 </html>

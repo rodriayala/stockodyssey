@@ -112,17 +112,31 @@ class ABMCarta {
     }
 	
     public function getCartaById($id)
-
     {
+      $connection = conectar();
+      $query = "SELECT * FROM cards_scg WHERE id = '$id'";
+      $result = mysqli_query($connection,$query);
+ 
+      if (!$result){
+        echo 'error select cards_scg'; 
+        mysqli_close($connection);
+        exit();
+      }  
+      mysqli_close($connection);
+      return $result; 
+    }
+
+
+    public function getCartaByNombre($nombre)
+        {
       
       $connection = conectar();
 
       $query = "SELECT * FROM cards_scg 
-                        WHERE id = '$id'";
+                        WHERE card_name = '$nombre'";
 
       $result = mysqli_query($connection,$query);
-
-      
+  
       if (!$result){
         echo 'error select cards_scg'; 
         mysqli_close($connection);
@@ -130,7 +144,6 @@ class ABMCarta {
       }  
     
       mysqli_close($connection);
-     
       return $result; 
     }
 }
