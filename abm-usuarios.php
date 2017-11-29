@@ -42,11 +42,6 @@ if($_POST)
 
     }
 }
-if ($_GET)
-{
-	$deleteOK=$_GET['deleteOK'];
-}
-
 else
 {
 	$nombre="";
@@ -114,13 +109,12 @@ if (!isset($todo_ok))
 
 		}
 		
-		var deleteOK = <?php echo $deleteOK; ?>;
+		var deleteOK = <?php echo $_GET['deleteOK']; ?>;
 
 		if(deleteOK==true)
 		{
 			alert("Usuario borrado correctamente.");
 			window.location.href = 'abm-usuarios.php';
-
 		}
 	
 	</script>

@@ -8,9 +8,9 @@ require('clases/GSUsuario.class.php');
 	$descripcion=$_POST['descripcion_usuario'];
 	$password=$_POST['password_usuario'];
 
-		$abmusuario = new ABMUsuario();
-		$deleteOK = $abmusuario->deleteUsuario($id);
-		header("location: abm-usuarios.php?deleteOK=$deleteOK");
-		exit();
+	$abmusuario = new ABMUsuario();
+	$deleteOK = $abmusuario->deleteUsuario($id);
+	header("location: abm-usuarios.php?deleteOK=$deleteOK");
+	exit();
 
  ?>
