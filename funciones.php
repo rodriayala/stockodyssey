@@ -19,8 +19,6 @@ function conectar()
 		
 }
 
-
-
 function logueo_in($usuario)
 
 

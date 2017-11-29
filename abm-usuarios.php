@@ -56,31 +56,13 @@ $result = $abmusuario->getAllUsuario();
 
 if (!isset($deleteOK)) $deleteOK = 0;
 if (!isset($insertarOK)) $insertarOK = 0;
+if (!isset($updateOK)) $updateOK = 0;
+if (!isset($mal_nombre)) $mal_nombre = 0;
+if (!isset($mal_email)) $mal_email = 0;
+if (!isset($mal_descripcion)) $mal_descripcion = 0;
+if (!isset($mal_password)) $mal_password = 0;
+if (!isset($todo_ok)) $todo_ok = 0;
 
-if (!isset($updateOK))
-{
-    $updateOK = 0;
-}
-if (!isset($mal_nombre))
-{
-    $mal_nombre = 0;
-}
-if (!isset($mal_email))
-{
-    $mal_email = 0;
-}
-if (!isset($mal_descripcion))
-{
-    $mal_descripcion = 0;
-}
-if (!isset($mal_password))
-{
-    $mal_password = 0;
-}
-if (!isset($todo_ok))
-{
-    $todo_ok = 0;
-}
 ?>
 <!DOCTYPE html>
 <html>
@@ -136,6 +118,7 @@ if (!isset($todo_ok))
 					<?php
                     	}
                     ?>
+                    <tr>
                         <th>E-mail:</th><th><input type="email" id="mail_usuario" name="mail_usuario" maxlength="100" tabindex="2" value="<?php echo $email; ?>"></th>
                     </tr>
                     <?php 
