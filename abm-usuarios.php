@@ -54,15 +54,8 @@ $abmusuario=new ABMUsuario;
 
 $result = $abmusuario->getAllUsuario();
 
-if (!isset($deleteOK))
-{
-    $deleteOK = 0;
-}
-
-if (!isset($insertarOK))
-{
-    $insertarOK = 0;
-}
+if (!isset($deleteOK)) $deleteOK = 0;
+if (!isset($insertarOK)) $insertarOK = 0;
 
 if (!isset($updateOK))
 {
@@ -128,8 +121,8 @@ if (!isset($todo_ok))
 
                     <tr>
                         <th>Nombre:</th>
-                        <th><input type="text" id="nombre_usuario" name="nombre_usuario" maxlength="250" tabindex="1" value="<?php echo $nombre; ?>"/>
-                    <tr>
+                        <th><input type="text" id="nombre_usuario" name="nombre_usuario" maxlength="250" tabindex="1" value="<?php echo $nombre; ?>"/></th>
+                    </tr>
                     <?php 
                     	if($mal_nombre==true)
                     	{
