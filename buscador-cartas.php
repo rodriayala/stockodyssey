@@ -11,7 +11,7 @@ if ($_POST)
 		$nombre=$_POST['card_name'];
 		$abmcarta=new ABMCarta;
 		$result =$abmcarta->getCartaByNombre($nombre);
-		var_dump($result);
+	
 	}
 }
 
