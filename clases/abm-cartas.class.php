@@ -133,7 +133,7 @@ class ABMCarta {
       $connection = conectar();
 
       $query = "SELECT * FROM cards_scg 
-                        WHERE card_name = '$nombre'";
+                        WHERE LOWER (card_name) ='". strtolower($nombre)."'";
 
       $result = mysqli_query($connection,$query);
   
