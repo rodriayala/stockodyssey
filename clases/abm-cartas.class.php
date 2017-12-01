@@ -123,11 +123,16 @@ class ABMCarta {
     }
   }
 
+<<<<<<< HEAD
   public function getCartaByNombre($nombre)
   {
     $connection = conectar();
     $query = "SELECT * FROM cards_scg WHERE LOWER (card_name) like '%". strtolower($nombre)."%'";
     $result = mysqli_query($connection,$query);
+=======
+      $query = "SELECT * FROM cards_scg 
+                        WHERE LOWER (card_name) like '%". strtolower($nombre)."%'";
+>>>>>>> 0f565d1844439b9f841243541af1f27ce08beaa5
 
     if (!$result)
     {
@@ -140,5 +145,9 @@ class ABMCarta {
       mysqli_close($connection);
       return $result;
     }
+<<<<<<< HEAD
   }
 }
+=======
+}
+>>>>>>> 0f565d1844439b9f841243541af1f27ce08beaa5
