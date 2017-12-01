@@ -53,7 +53,7 @@ if ($_POST)
 				<td><?php echo $fila['card_url']; ?></td>
 				<td><?php echo $fila['card_price']; ?></td>
 				<td align="center">
-					<a href="formulario-edicion-cartas.php?id_usuario=<?php echo $fila['id'];?>&acc=modificacion">
+					<a href="formulario-edicion-cartas.php?id=<?php echo $fila['id'];?>&acc=modificacion">
 						<input type="button" value="Editar" />
 					</a>
 				</td>

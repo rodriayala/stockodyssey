@@ -3,7 +3,6 @@ require('clases/abm-usuarios.class.php');
 require('clases/GSUsuario.class.php');
 	
 	$id=$_GET['id_usuario'];
-
 	if($_POST)
 	{
 		if ($_POST['modificar'])
@@ -13,9 +12,7 @@ require('clases/GSUsuario.class.php');
 			$descripcion=trim($_POST['descripcion_usuario']);
 			$password=trim($_POST['password_usuario']);
 			$id=trim($_POST['id_usuario']);
-
 			$todo_ok = true;
-
 	        if (strlen($nombre) == 0) {
 	            $mal_nombre = true;
 	            $todo_ok = false;
@@ -32,14 +29,12 @@ require('clases/GSUsuario.class.php');
 	            $mal_password = true;
 	            $todo_ok = false;
 	        }
-
 	        if ($todo_ok == true) {
 				$gsusuario=new GSUsuario();
 				$gsusuario->setNombre($nombre);
 				$gsusuario->setMail($email);
 				$gsusuario->setDescripcion($descripcion);
 				$gsusuario->setPassword($password);
-
 				$abmusuario=new ABMUsuario();
 				$updateOK = $abmusuario->updateUsuario($gsusuario,$id);
 			}
@@ -47,7 +42,6 @@ require('clases/GSUsuario.class.php');
 	}else{#primer post
 		$abmusuario = new ABMUsuario();
 		$result = $abmusuario->getUsuarioById($id);	
-
 		while ($fila = mysqli_fetch_array($result))
 		{
 			$nombre = trim($fila['nombre_usuario']);
@@ -56,8 +50,6 @@ require('clases/GSUsuario.class.php');
 			$password = trim($fila['password_usuario']);
 		}	
 	}
-
-
 	if (!isset($mal_nombre)) $mal_nombre = 0;
 	if (!isset($mal_email)) $mal_email = 0;
 	if (!isset($mal_descripcion)) $mal_descripcion = 0;

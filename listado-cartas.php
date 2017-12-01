@@ -37,12 +37,12 @@ $result =$abmcarta->getAllCartas();
 				<td><?php echo $fila['card_url']; ?></td>
 				<td><?php echo $fila['card_price']; ?></td>
 				<td align="center">
-					<a href="formulario-edicion-cartas.php?id_usuario=<?php echo $fila['id'];?>&acc=modificacion">
+					<a href="formulario-edicion-cartas.php?id=<?php echo $fila['id'];?>">
 						<input type="button" value="Editar" />
 					</a>
 				</td>
 				<td align="center">
-					<a href="baja-cartas.php?id_usuario=<?php echo $fila['id'];?>"> 
+					<a href="baja-cartas.php?id=<?php echo $fila['id'];?>"> 
 						<input type="button" value="Borrar"/>
 					</a>
 				</td>

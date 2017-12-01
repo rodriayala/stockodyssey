@@ -5,7 +5,7 @@ function conectar()
 
  	$SERVER		= "127.0.0.1";
 	$USER 		= "root";
-	$PASS 		= "";
+	$PASS 		= "admin123";
 	$DATABASE	= "gestionproductos";
 
 	if ($db = mysqli_connect($SERVER, $USER, $PASS, $DATABASE))
