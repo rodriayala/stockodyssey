@@ -65,8 +65,7 @@ class ABMCarta {
     $query = "UPDATE cards_scg SET "
     . "card_name = '$nombre', "
     . "card_edition = '$edicion', "
-    . "card_url  = '$url', "
-    . "card_price = '$precio' "
+    . "card_url  = '$url' "
     . "WHERE id = '$id'";
 
     $result = mysqli_query($connection,$query);

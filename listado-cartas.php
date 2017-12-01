@@ -42,7 +42,7 @@ $result =$abmcarta->getAllCartas();
 					</a>
 				</td>
 				<td align="center">
-					<a href="baja-cartas.php?id=<?php echo $fila['id'];?>"> 
+					<a href="baja-cartas.php?id=<?php echo $fila['id'];?>">
 						<input type="button" value="Borrar"/>
 					</a>
 				</td>
