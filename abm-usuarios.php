@@ -1,5 +1,5 @@
 <?php
-//error_reporting(0);
+error_reporting(0);
 require('funciones.php');
 require('clases/abm-usuarios.class.php');
 require('clases/GSUsuario.class.php');
@@ -74,7 +74,7 @@ if (!isset($todo_ok)) $todo_ok = 0;
     <head>
         <meta charset="utf-8">
 
-        <title>Formulario Limpio</title>
+        <title>Odyssey Sistema Total de Administracion</title>
 
         <meta name="robots" content="noindex, nofollow">
 
@@ -461,8 +461,9 @@ if (!isset($todo_ok)) $todo_ok = 0;
                           
                            <div class="form-group form-actions">
                            	<div class="col-md-10 col-md-offset-2">
-                                    <input type="submit" value="Alta" name="alta" id="alta" class="btn btn-success"/>
+                            		<input type="submit" value="Alta" name="alta" id="alta" class="btn btn-success"/>
                             		<input type="reset" value="Limpiar" name="limpiar" id="limpiar" class="btn btn-danger"/>
+                            		<a href="principal.php"><button id="cancel" type="button" class="btn btn-default" data-dismiss="modal">VOLVER AL MENU</button></a>    
                             </div>
                            </div>
                      </div>                                                                                                            

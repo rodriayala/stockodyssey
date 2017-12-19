@@ -1,17 +1,136 @@
 <?php
 require_once("funciones.php");
 error_reporting(0);
-/*if (falta_logueo())
+if (falta_logueo())
 { 
 	header('location:index.php');
 	exit();
-}*/
+}
 
-	$cantiProdVen = 0;
-	$totalProdCargados = 0;
-	$totalDinInv = 0;
+
+	/* CANTIDAD DE PRODUCTOS VENDIDOS */	
+	$sql_cantiProdVen = "select count(*) as cantiProdVen from stock_actual WHERE estado_venta LIKE 'vendido'";
+	#echo $sql_cantiProdVen; // exit();
+	$db_cantiProdVen  = conectar();
+	 
+	$r_cantiProdVen   = mysqli_query($db_cantiProdVen, $sql_cantiProdVen);
+	
+	if($r_cantiProdVen == false)
+	{
+		mysqli_close($db_cantiProdVen);
+		$error = "Error: (" . mysqli_errno() . ") " . mysqli_error().")";
+	}
+		mysqli_close($db_cantiProdVen);
+	
+	$arrx_cantiProdVen = mysqli_fetch_array($r_cantiProdVen);
+	$cantiProdVen = $arrx_cantiProdVen['cantiProdVen'];
+	#echo 'canti:'.$cantiProdVen;
+	/*FIN CANTIDAD DE PRODUCTOS VENDIDOS */	
+
+	/* CANTIDAD DE PRODUCTOS CARGADOS */	
+	$sql_totalProdCargados = "select count(*) as totalProdCargados from stock_actual";
+	#echo $sql_cantiProdVen; // exit();
+	$db_totalProdCargados  = conectar();
+	 
+	$r_totalProdCargados   = mysqli_query($db_totalProdCargados, $sql_totalProdCargados);
+	
+	if($r_totalProdCargados == false)
+	{
+		mysqli_close($db_totalProdCargados);
+		$error = "Error: (" . mysqli_errno() . ") " . mysqli_error().")";
+	}
+		mysqli_close($db_totalProdCargados);
+	
+	$arrx_totalProdCargados = mysqli_fetch_array($r_totalProdCargados);
+	$totalProdCargados = $arrx_totalProdCargados['totalProdCargados'];
+	#echo 'canti:'.$totalProdCargados;
+	/*FIN CANTIDAD DE PRODUCTOS CARGADOS */	
+		
+
+	/* CANTIDAD DE DINERO INVERTIDO */	
+	$sql_totalDinInv = " SELECT SUM(precio_compra) as total FROM stock_actual ";
+	#echo $sql_cantiProdVen; // exit();
+	$db_totalDinInv  = conectar();
+	 
+	$r_totalDinInv   = mysqli_query($db_totalDinInv, $sql_totalDinInv);
+	
+	if($r_totalDinInv == false)
+	{
+		mysqli_close($db_totalDinInv);
+		$error = "Error: (" . mysqli_errno() . ") " . mysqli_error().")";
+	}
+		mysqli_close($db_totalDinInv);
+	
+	$arrx_totalDinInv = mysqli_fetch_array($r_totalDinInv);
+	$totalDinInv = $arrx_totalDinInv['total'];
+	#echo 'canti:'.$totalDinInv;
+	/*FIN CANTIDAD DE DINERO INVERTIDO */	
+		
 	$totalDinRec = 0;
+	
+
+	/* CANTIDAD DE DINERO GANADO */	
+	$sql_totalDinRec = " SELECT total FROM ( SELECT SUM(CASE WHEN precio_venta >0 THEN (precio_venta-precio_compra) ELSE 0 END) total from `stock_actual` ) as a ";
+	#echo $sql_cantiProdVen; // exit();
+	$db_totalDinRec  = conectar();
+	 
+	$r_totalDinRec   = mysqli_query($db_totalDinRec, $sql_totalDinRec);
+	
+	if($r_totalDinRec == false)
+	{
+		mysqli_close($db_totalDinRec);
+		$error = "Error: (" . mysqli_errno() . ") " . mysqli_error().")";
+	}
+		mysqli_close($db_totalDinRec);
+	
+	$arrx_totalDinRec = mysqli_fetch_array($r_totalDinRec);
+	$totalDinRec = $arrx_totalDinRec['total'];
+	#echo 'canti:'.$totalDinInv;
+	/*FIN CANTIDAD DE DINERO GANADO */
+		
 	$cantiUsers = 0;
+
+
+	/* CANTIDAD DE CLIENTES 	
+	$sql_cantiUsers = " select count(*) as canti from clientes";
+	#echo $sql_cantiProdVen; // exit();
+	$db_cantiUsers  = conectar();
+	 
+	$r_cantiUsers   = mysqli_query($db_cantiUsers, $sql_cantiUsers);
+	
+	if($r_cantiUsers == false)
+	{
+		mysqli_close($db_cantiUsers);
+		$error = "Error: (" . mysqli_errno() . ") " . mysqli_error().")";
+	}
+		mysqli_close($db_cantiUsers);
+	
+	$arrx_cantiUsers = mysqli_fetch_array($r_cantiUsers);
+	$cantiUsers = $arrx_cantiUsers['canti'];
+	#echo 'canti:'.$cantiUsers;
+	/*FIN CANTIDAD DE CLIENTES */	
+	
+	
+	/*----------------------------------------------*/
+	/*-----------------LISTADOS---------------------*/
+	
+
+	/* LISTADO DE PEDIDOS */
+	$sql_listaPedidos = " SELECT * FROM `stock_actual` LEFT JOIN usuarios ON usuarios.id_usuario = stock_actual.id_usuario_venta LEFT JOIN cards_scg ON cards_scg.id = stock_actual.id_card WHERE `estado_venta` != 'DISPONIBLE' order by `fecha_venta` DESC ";
+	#echo $sql_cantiProdVen; // exit();
+	$db_listaPedidos  = conectar();
+	 
+	$r_listaPedidos   = mysqli_query($db_listaPedidos, $sql_listaPedidos);
+	
+	if($r_listaPedidos == false)
+	{
+		mysqli_close($db_listaPedidos);
+		$error = "Error: (" . mysqli_errno() . ") " . mysqli_error().")";
+	}
+		mysqli_close($db_listaPedidos);
+	
+	#echo 'canti:'.$cantiUsers;
+	/*FIN LISTADO DE PEDIDOS */		
 ?>
 <!DOCTYPE html>
 <!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
@@ -440,165 +559,61 @@ error_reporting(0);
                                     <div class="dash-tile-options">
                                         <a href="javascript:void(0)" class="btn btn-default" data-toggle="tooltip" title="Manage Orders"><i class="fa fa-cogs"></i></a>
                                     </div>
-                                    <i class="fa fa-shopping-cart"></i> New Orders
+                                    <i class="fa fa-shopping-cart"></i> Nuevos Pedidos
                                 </div>
                                 <div class="dash-tile-content">
                                     <div class="dash-tile-content-inner-fluid">
                                         <table id="dash-example-orders" class="table table-striped table-bordered table-condensed">
                                             <thead>
                                                 <tr>
-                                                    <th class="cell-small"></th>
                                                     <th class="hidden-xs hidden-sm hidden-md">#</th>
-                                                    <th><i class="fa fa-shopping-cart"></i> Order</th>
-                                                    <th class="hidden-xs hidden-sm hidden-md"><i class="fa fa-user"></i> User</th>
+                                                     <th><i class="fa fa-shopping-cart"></i> Número</th>
+                                                    <th><i class="fa fa-shopping-cart"></i> Producto</th>                                                   
+                                                    <th class="hidden-xs hidden-sm hidden-md"><i class="fa fa-user"></i> Usuario Venta</th>
                                                     <th><i class="fa fa-bolt"></i> Status</th>
+                                                    <th class="cell-small"></th>
                                                 </tr>
                                             </thead>
                                             <tbody>
+											<?php 
+												$i=0;
+                                            	while ($arr_listaPedidos = mysqli_fetch_array($r_listaPedidos))		
+                                                {	 
+                                            ?>       
                                                 <tr>
+                                                    <td class="hidden-xs hidden-sm hidden-md"><?php echo $i; ?></td>
+                                                    <td><a href="javascript:void(0)"><?php echo trim($arr_listaPedidos['id_stock']); ?></a></td>
+                                                    <td><a href="javascript:void(0)"><?php echo trim($arr_listaPedidos['card_name']); ?></a></td>
+                                                    <td class="hidden-xs hidden-sm hidden-md"><a href="javascript:void(0)"><?php echo trim($arr_listaPedidos['nombre_usuario']); ?></a></td>
+                                                    <td><?php
+                                                    		if(trim($arr_listaPedidos['estado_venta'])=="RESERVADO") 
+															{
+														?>
+															<span class="label label-warning">RESERVADO</span>
+                                                        <?php
+															}
+														 ?> 
+                                                    	<?php
+                                                    		if(trim($arr_listaPedidos['estado_venta'])=="VENDIDO") 
+															{
+														?>
+															<span class="label label-danger">VENDIDO</span></td>
+                                                        <?php
+															}
+														 ?>    
+                                                    </td>              
                                                     <td class="text-center">
                                                         <div class="btn-group">
                                                             <a href="javascript:void(0)" data-toggle="tooltip" title="Process" class="btn btn-xs btn-primary"><i class="fa fa-book"></i></a>
                                                             <a href="javascript:void(0)" data-toggle="tooltip" title="Cancel" class="btn btn-xs btn-danger"><i class="fa fa-times"></i></a>
                                                         </div>
                                                     </td>
-                                                    <td class="hidden-xs hidden-sm hidden-md">1</td>
-                                                    <td><a href="javascript:void(0)">Order#1</a></td>
-                                                    <td class="hidden-xs hidden-sm hidden-md"><a href="javascript:void(0)">User1</a></td>
-                                                    <td><span class="label label-warning">Pending..</span></td>
                                                 </tr>
-                                                <tr>
-                                                    <td class="text-center">
-                                                        <div class="btn-group">
-                                                            <a href="javascript:void(0)" data-toggle="tooltip" title="Process" class="btn btn-xs btn-primary"><i class="fa fa-book"></i></a>
-                                                            <a href="javascript:void(0)" data-toggle="tooltip" title="Cancel" class="btn btn-xs btn-danger"><i class="fa fa-times"></i></a>
-                                                        </div>
-                                                    </td>
-                                                    <td class="hidden-xs hidden-sm hidden-md">2</td>
-                                                    <td><a href="javascript:void(0)">Order#2</a></td>
-                                                    <td class="hidden-xs hidden-sm hidden-md"><a href="javascript:void(0)">User2</a></td>
-                                                    <td><span class="label label-success">Sent!</span></td>
-                                                </tr>
-                                                <tr>
-                                                    <td class="text-center">
-                                                        <div class="btn-group">
-                                                            <a href="javascript:void(0)" data-toggle="tooltip" title="Process" class="btn btn-xs btn-primary"><i class="fa fa-book"></i></a>
-                                                            <a href="javascript:void(0)" data-toggle="tooltip" title="Cancel" class="btn btn-xs btn-danger"><i class="fa fa-times"></i></a>
-                                                        </div>
-                                                    </td>
-                                                    <td class="hidden-xs hidden-sm hidden-md">3</td>
-                                                    <td><a href="javascript:void(0)">Order#3</a></td>
-                                                    <td class="hidden-xs hidden-sm hidden-md"><a href="javascript:void(0)">User3</a></td>
-                                                    <td><span class="label label-danger">Canceled!</span></td>
-                                                </tr>
-                                                <tr>
-                                                    <td class="text-center">
-                                                        <div class="btn-group">
-                                                            <a href="javascript:void(0)" data-toggle="tooltip" title="Process" class="btn btn-xs btn-primary"><i class="fa fa-book"></i></a>
-                                                            <a href="javascript:void(0)" data-toggle="tooltip" title="Cancel" class="btn btn-xs btn-danger"><i class="fa fa-times"></i></a>
-                                                        </div>
-                                                    </td>
-                                                    <td class="hidden-xs hidden-sm hidden-md">4</td>
-                                                    <td><a href="javascript:void(0)">Order#4</a></td>
-                                                    <td class="hidden-xs hidden-sm hidden-md"><a href="javascript:void(0)">User4</a></td>
-                                                    <td><span class="label label-success">Sent!</span></td>
-                                                </tr>
-                                                <tr>
-                                                    <td class="text-center">
-                                                        <div class="btn-group">
-                                                            <a href="javascript:void(0)" data-toggle="tooltip" title="Process" class="btn btn-xs btn-primary"><i class="fa fa-book"></i></a>
-                                                            <a href="javascript:void(0)" data-toggle="tooltip" title="Cancel" class="btn btn-xs btn-danger"><i class="fa fa-times"></i></a>
-                                                        </div>
-                                                    </td>
-                                                    <td class="hidden-xs hidden-sm hidden-md">5</td>
-                                                    <td><a href="javascript:void(0)">Order#5</a></td>
-                                                    <td class="hidden-xs hidden-sm hidden-md"><a href="javascript:void(0)">User5</a></td>
-                                                    <td><span class="label label-success">Sent!</span></td>
-                                                </tr>
-                                                <tr>
-                                                    <td class="text-center">
-                                                        <div class="btn-group">
-                                                            <a href="javascript:void(0)" data-toggle="tooltip" title="Process" class="btn btn-xs btn-primary"><i class="fa fa-book"></i></a>
-                                                            <a href="javascript:void(0)" data-toggle="tooltip" title="Cancel" class="btn btn-xs btn-danger"><i class="fa fa-times"></i></a>
-                                                        </div>
-                                                    </td>
-                                                    <td class="hidden-xs hidden-sm hidden-md">6</td>
-                                                    <td><a href="javascript:void(0)">Order#6</a></td>
-                                                    <td class="hidden-xs hidden-sm hidden-md"><a href="javascript:void(0)">User6</a></td>
-                                                    <td><span class="label label-danger">Canceled!</span></td>
-                                                </tr>
-                                                <tr>
-                                                    <td class="text-center">
-                                                        <div class="btn-group">
-                                                            <a href="javascript:void(0)" data-toggle="tooltip" title="Process" class="btn btn-xs btn-primary"><i class="fa fa-book"></i></a>
-                                                            <a href="javascript:void(0)" data-toggle="tooltip" title="Cancel" class="btn btn-xs btn-danger"><i class="fa fa-times"></i></a>
-                                                        </div>
-                                                    </td>
-                                                    <td class="hidden-xs hidden-sm hidden-md">7</td>
-                                                    <td><a href="javascript:void(0)">Order#7</a></td>
-                                                    <td class="hidden-xs hidden-sm hidden-md"><a href="javascript:void(0)">User7</a></td>
-                                                    <td><span class="label label-default">Inactive</span></td>
-                                                </tr>
-                                                <tr>
-                                                    <td class="text-center">
-                                                        <div class="btn-group">
-                                                            <a href="javascript:void(0)" data-toggle="tooltip" title="Process" class="btn btn-xs btn-primary"><i class="fa fa-book"></i></a>
-                                                            <a href="javascript:void(0)" data-toggle="tooltip" title="Cancel" class="btn btn-xs btn-danger"><i class="fa fa-times"></i></a>
-                                                        </div>
-                                                    </td>
-                                                    <td class="hidden-xs hidden-sm hidden-md">8</td>
-                                                    <td><a href="javascript:void(0)">Order#8</a></td>
-                                                    <td class="hidden-xs hidden-sm hidden-md"><a href="javascript:void(0)">User8</a></td>
-                                                    <td><span class="label label-danger">Canceled!</span></td>
-                                                </tr>
-                                                <tr>
-                                                    <td class="text-center">
-                                                        <div class="btn-group">
-                                                            <a href="javascript:void(0)" data-toggle="tooltip" title="Process" class="btn btn-xs btn-primary"><i class="fa fa-book"></i></a>
-                                                            <a href="javascript:void(0)" data-toggle="tooltip" title="Cancel" class="btn btn-xs btn-danger"><i class="fa fa-times"></i></a>
-                                                        </div>
-                                                    </td>
-                                                    <td class="hidden-xs hidden-sm hidden-md">9</td>
-                                                    <td><a href="javascript:void(0)">Order#9</a></td>
-                                                    <td class="hidden-xs hidden-sm hidden-md"><a href="javascript:void(0)">User9</a></td>
-                                                    <td><span class="label label-info">Manual process..</span></td>
-                                                </tr>
-                                                <tr>
-                                                    <td class="text-center">
-                                                        <div class="btn-group">
-                                                            <a href="javascript:void(0)" data-toggle="tooltip" title="Process" class="btn btn-xs btn-primary"><i class="fa fa-book"></i></a>
-                                                            <a href="javascript:void(0)" data-toggle="tooltip" title="Cancel" class="btn btn-xs btn-danger"><i class="fa fa-times"></i></a>
-                                                        </div>
-                                                    </td>
-                                                    <td class="hidden-xs hidden-sm hidden-md">10</td>
-                                                    <td><a href="javascript:void(0)">Order#10</a></td>
-                                                    <td class="hidden-xs hidden-sm hidden-md"><a href="javascript:void(0)">User10</a></td>
-                                                    <td><span class="label label-default">Inactive</span></td>
-                                                </tr>
-                                                <tr>
-                                                    <td class="text-center">
-                                                        <div class="btn-group">
-                                                            <a href="javascript:void(0)" data-toggle="tooltip" title="Process" class="btn btn-xs btn-primary"><i class="fa fa-book"></i></a>
-                                                            <a href="javascript:void(0)" data-toggle="tooltip" title="Cancel" class="btn btn-xs btn-danger"><i class="fa fa-times"></i></a>
-                                                        </div>
-                                                    </td>
-                                                    <td class="hidden-xs hidden-sm hidden-md">11</td>
-                                                    <td><a href="javascript:void(0)">Order#11</a></td>
-                                                    <td class="hidden-xs hidden-sm hidden-md"><a href="javascript:void(0)">User11</a></td>
-                                                    <td><span class="label label-info">Manual process..</span></td>
-                                                </tr>
-                                                <tr>
-                                                    <td class="text-center">
-                                                        <div class="btn-group">
-                                                            <a href="javascript:void(0)" data-toggle="tooltip" title="Process" class="btn btn-xs btn-primary"><i class="fa fa-book"></i></a>
-                                                            <a href="javascript:void(0)" data-toggle="tooltip" title="Cancel" class="btn btn-xs btn-danger"><i class="fa fa-times"></i></a>
-                                                        </div>
-                                                    </td>
-                                                    <td class="hidden-xs hidden-sm hidden-md">12</td>
-                                                    <td><a href="javascript:void(0)">Order#12</a></td>
-                                                    <td class="hidden-xs hidden-sm hidden-md"><a href="javascript:void(0)">User12</a></td>
-                                                    <td><span class="label label-info">Manual process..</span></td>
-                                                </tr>
+                                             <?php
+											 	$i++;
+												}
+											 ?>   
+                                               
                                             </tbody>
                                         </table>
                                     </div>

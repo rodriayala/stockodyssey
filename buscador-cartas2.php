@@ -1,64 +1,20 @@
 <?php
 require('funciones.php');
-require('clases/abm-usuarios.class.php');
-require('clases/GSUsuario.class.php');
-	
-	if($_POST)
-	{
-		if ($_POST['modificar'])
-		{
-			$nombre=trim($_POST['nombre_usuario']);
-			$email=trim($_POST['mail_usuario']);
-			$descripcion=trim($_POST['descripcion_usuario']);
-			$password=trim($_POST['password_usuario']);
-			$id=trim($_POST['id_usuario']);
-			$todo_ok = true;
-	        if (strlen($nombre) == 0) {
-	            $mal_nombre = true;
-	            $todo_ok = false;
-	        }
-	        if (strlen($email) == 0) {
-	            $mal_email = true;
-	            $todo_ok = false;
-	        }
-	        if (strlen($descripcion) == 0) {
-	            $mal_descripcion = true;
-	            $todo_ok = false;
-	        }
-	        if (strlen($password) == 0) {
-	            $mal_password = true;
-	            $todo_ok = false;
-	        }
-	        if ($todo_ok == true) {
-				$gsusuario=new GSUsuario();
-				$gsusuario->setNombre($nombre);
-				$gsusuario->setMail($email);
-				$gsusuario->setDescripcion($descripcion);
-				$gsusuario->setPassword($password);
-				$abmusuario=new ABMUsuario();
-				$updateOK = $abmusuario->updateUsuario($gsusuario,$id);
-			}
-		}
-	}else{#primer post
-		$id = $_GET['id_usuario'];
+require('clases/abm-cartas.class.php');
+require('clases/GSCarta.class.php');
 
-		$abmusuario = new ABMUsuario();
-		$result = $abmusuario->getUsuarioById($id);	
-		
-		while ($fila = mysqli_fetch_array($result))
-		{
-			$nombre = trim($fila['nombre_usuario']);
-			$email = trim($fila['mail_usuario']);
-			$descripcion = trim($fila['descripcion_usuario']);
-			$password = trim($fila['password_usuario']);
-		}	
-	}
+
+if ($_POST)
+{
+	if ($_POST['buscar'])
+	{
+		$nombre=$_POST['card_name'];
+		$abmcarta=new ABMCarta;
+		$result =$abmcarta->getCartaByNombre($nombre);
 	
-	if (!isset($updateOK)) $updateOK = false;
-	if (!isset($mal_nombre)) $mal_nombre = 0;
-	if (!isset($mal_email)) $mal_email = 0;
-	if (!isset($mal_descripcion)) $mal_descripcion = 0;
-	if (!isset($mal_password)) $mal_password = 0;
+	}
+}
+
 ?>
 <!DOCTYPE html>
 <!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
@@ -66,7 +22,7 @@ require('clases/GSUsuario.class.php');
     <head>
         <meta charset="utf-8">
 
-        <title>Formulario Limpio</title>
+        <title>Odyssey Sistema Total de Administracion</title>
 
         <meta name="robots" content="noindex, nofollow">
 
@@ -102,14 +58,6 @@ require('clases/GSUsuario.class.php');
 
         <!-- Modernizr (browser feature detection library) & Respond.js (Enable responsive CSS code on browsers that don't support it, eg IE8) -->
         <script src="js/vendor/modernizr-respond.min.js"></script>
-		<script>
-            var updateOK = <?php echo $updateOK; ?>;
-            if(updateOK==true)
-            {
-                alert("Usuario modificado correctamente.");
-                window.location.href = 'abm-usuarios.php';
-            }
-        </script>        
     </head>
 
     <!-- Add the class .fixed to <body> for a fixed layout on large resolutions (min: 1200px) -->
@@ -387,12 +335,9 @@ require('clases/GSUsuario.class.php');
                     <!-- END Navigation info -->
 
                     <!-- FORMULARIO -->
-                    <form action="" method="post" class="form-horizontal form-box" >
-                        <input type="hidden" name="id_usuario" value=<?php echo $id; ?> />
-						<input type="hidden" name="acc" value="modificacion"/>
-                        <h4 class="form-box-header">EDITAR USUARIOS</h4>
-                        
-  						<div class="form-box-content">
+                    <form action="page_form_components.html" method="post" class="form-horizontal form-box" onsubmit="return false;">
+                        <h4 class="form-box-header">BUSCADOR DE CARTAS</h4>
+ 						<div class="form-box-content">
                             <div class="form-group">
                                 <label class="control-label col-md-2" for="example-input-small">Nombre:</label>
                                 <div class="col-md-3">
@@ -404,51 +349,7 @@ require('clases/GSUsuario.class.php');
                                 </div>
                					<?php } ?>                 
                             </div>
-                            
-                            <div class="form-group">
-                                <label class="control-label col-md-2" for="example-input-small">E-Mail:</label>
-                                <div class="col-md-3">
-                                    <input type="text" id="mail_usuario" name="mail_usuario" maxlength="250" tabindex="1" value="<?php echo $email; ?>" class="form-control input-sm"/>
-                                </div>
-                                <?php if($mal_email==true){ ?>	        
-                                <div class="col-md-7">
-                                    <span class="help-block"><strong>¡ATENCION!</strong> Este campo tiene que estar completo.</span>
-                                </div>
-               					<?php } ?>                 
-                            </div>
-                            
-                            <div class="form-group">
-                                <label class="control-label col-md-2" for="example-input-small">Descripcion:</label>
-                                <div class="col-md-3">
-                                    <input type="text" id="descripcion_usuario" name="descripcion_usuario" maxlength="250" tabindex="1" value="<?php echo $descripcion; ?>" class="form-control input-sm"/>
-                                </div>
-                                <?php if($mal_descripcion==true){ ?>	        
-                                <div class="col-md-7">
-                                    <span class="help-block"><strong>¡ATENCION!</strong> Este campo tiene que estar completo.</span>
-                                </div>
-               					<?php } ?>                 
-                            </div>
-                            
-                            <div class="form-group">
-                                <label class="control-label col-md-2" for="example-input-small">Password:</label>
-                                <div class="col-md-3">
-                                    <input type="password" id="password_usuario" name="password_usuario" maxlength="250" tabindex="1" value="<?php echo $password; ?>" class="form-control input-sm"/>
-                                </div>
-                                <?php if($mal_password==true){ ?>	        
-                                <div class="col-md-7">
-                                    <span class="help-block"><strong>¡ATENCION!</strong> Este campo tiene que estar completo.</span>
-                                </div>
-               					<?php } ?>                 
-                            </div>
-                            
-                        </div>
- 
-                        <div class="form-group form-actions">
-                           	<div class="col-md-10 col-md-offset-2">
-                            	<a href="abm-usuarios.php"><button id="cancel" type="button">VOLVER</button></a>
-                            	<input type="submit" name="modificar" id="modificar" value="modificar">
-                            </div>
-                        </div>                                                   
+                     	</div>                              
                     </form>
                     <!-- END FORMULARIO -->
 

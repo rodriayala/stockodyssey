@@ -54,7 +54,7 @@ if($_POST)
 			if (trim($arr['password_usuario']) == trim($_POST['password']))
 			//if(password_verify(trim($_POST['password']), trim($arr['password'])))
 			{	
-				$Xdes_usu = $arr['usuario'];
+				$Xdes_usu = $arr['nombre_usuario'];
 												
 				logueo_in($Xdes_usu);
 																								
