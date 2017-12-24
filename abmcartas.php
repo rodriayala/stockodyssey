@@ -1,3 +1,67 @@
+<?php
+require_once("funciones.inc.php");
+error_reporting(0);
+if (falta_logueo())
+{ 
+	header('location:index.php');
+	exit();
+}
+
+
+$sqla = "select * from cartasabuscar order by nombre_carta ";
+//echo $sqla; // exit();
+$dba  = conecto();
+ 
+$ra   = mysqli_query($dba, $sqla);
+
+if($ra == false)
+{
+	mysqli_close($dba);
+    $error = "Error: (" . mysql_errno() . ") " . mysql_error().")";
+}
+    mysqli_close($dba);
+
+
+if($_POST)
+{//SEGUNDOS POST
+
+	if($_POST['BTNALTA'])
+	{//si creo un nuevo 	
+		
+		$XTXTdescri = trim($_POST['TXTdescri']);
+		$nivel 		= trim($_POST['nivel']);
+		$todo_ok = true;
+		
+		if(strlen($XTXTdescri)==0)
+		{
+			$mal_TXTdescri 	 = true;
+			$todo_ok = false;
+		}
+		
+		if($todo_ok==true)
+		{#Si esta todo bien	
+	
+			$sqla = "insert into cartasabuscar (nombre_carta, nivelcarta) values ('$XTXTdescri','$nivel')";
+			#echo $sqla;  exit();
+			$dba  = conecto();
+			 
+			$ra   = mysqli_query($dba, $sqla);
+			
+			if($ra == false)
+			{
+				mysqli_close($dba);
+				$error = "Error: (" . mysql_errno() . ") " . mysql_error().")";
+			}
+				mysqli_close($dba);		
+			
+			
+			echo "<script language='javascript'>
+					 alert('REGISTRO CREADO');
+					window.location.href='abmcartas.php'; </script>";
+		}
+	}//fin creo un nuevo
+}
+?>
 <!DOCTYPE html>
 <!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
 <!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
@@ -5,8 +69,6 @@
         <meta charset="utf-8">
 
         <title>Odyssey Sistema Total de Administracion</title>
-
-        <meta name="robots" content="noindex, nofollow">
 
         <meta name="viewport" content="width=device-width,initial-scale=1">
 
@@ -304,30 +366,124 @@
 
             <!-- Inner Container -->
             <div id="inner-container">
-				<?php include('sidebar.php'); ?>
+                <!-- Sidebar -->
+                <aside id="page-sidebar" class="collapse navbar-collapse navbar-main-collapse">
+                 <?php include('sidebar.php'); ?>
+                </aside>
+                <!-- END Sidebar -->
 
                 <!-- Page Content -->
                 <div id="page-content">
                     <!-- Navigation info -->
                     <ul id="nav-info" class="clearfix">
-                        <li><a href="index.html"><i class="fa fa-home"></i></a></li>
-                        <li><a href="javascript:void(0)">Forms</a></li>
-                        <li class="active"><a href="">Components</a></li>
+                        <li><a href="principal.php"><i class="fa fa-home"></i></a></li>
+                        <li class="active"><a href="principal.php">Menu Principal</a></li>
                     </ul>
                     <!-- END Navigation info -->
 
-                    <!-- FORMULARIO -->
-                    <form action="page_form_components.html" method="post" class="form-horizontal form-box" onsubmit="return false;">
-                        <h4 class="form-box-header">Formulario limpio</h4>
-                        
-                    </form>
-                    <!-- END FORMULARIO -->
+                    <!-- Datatables -->
+                    <h3 class="page-header page-header-top">LISTADO DE CARTAS</h3>
+
+
+					<h3 class="page-header page-header-top"><div class="right"><button data-toggle="modal" data-target="#squarespaceModal" class="btn btn-primary center-block">ALTA</button></div>
+</h3>
+					
+
+<!-- line modal -->
+<div class="modal fade" id="squarespaceModal" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+	<div class="modal-content">
+		<div class="modal-header">
+			<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span><span class="sr-only">Close</span></button>
+			<h3 class="modal-title" id="lineModalLabel">Alta Producto</h3>
+		</div>
+        <form action="" method="post" name="form1" > 
+		<div class="modal-body">
+            <!-- content goes here -->
+              <div class="form-group">
+                <label for="TXTdescri">Nombre</label>
+                <input type="text" class="form-control" placeholder="Ingresar Nombre" id="TXTdescri" name="TXTdescri" value="<?php echo $descripcion; ?>" size="100">
+           		<?php if($mal_TXTdescri==true){ echo "* - Debe ser correcto";} ?>
+            
+              </div>
+              <div class="form-group">
+                <label for="exampleInputPassword1">Nivel</label>
+                <select name="nivel" id="nivel" class="form-control">
+                  <option value="primaria">Primaria</option>
+                  <option value="secundaria">Secundaria</option>
+                  <option value="terciaria">Terciaria</option>
+                </select>
+              </div>
+		</div>
+		<div class="modal-footer">
+			<div class="btn-group btn-group-justified" role="group" aria-label="group button">
+				<div class="btn-group" role="group">
+					<button type="button" class="btn btn-default" data-dismiss="modal"  role="button">Close</button>
+				</div>
+				<div class="btn-group btn-delete hidden" role="group">
+					<button type="button" id="delImage" class="btn btn-default btn-hover-red" data-dismiss="modal"  role="button">CERRAR</button>
+				</div>
+				<div class="btn-group" role="group">
+					<input type="submit" id="BTNALTA" name="BTNALTA" class="btn btn-default btn-hover-green" data-action="save" role="button" value="ALTA">
+				</div>
+			</div>
+		</div>
+        </form>
+	</div>
+  </div>
+</div>
+<!-- fin modal-->
+                    <table id="example-datatables" class="table table-striped table-bordered table-hover">
+                        <thead>
+                            <tr>
+                                <th class="cell-small text-center hidden-xs hidden-sm">ID</th>
+                                <th>Nombre</th>
+                                <th><i class="fa fa-bolt"></i> Nivel</th>
+                              <th class="cell-small">Acción</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        <?php 
+							while ($arr = mysqli_fetch_array($ra))		
+							{	 
+							
+						?>
+                            <tr>
+                                <td class="text-center hidden-xs hidden-sm"><?php echo $id_carta = $arr['id_carta']; ?></td>
+                                <td><a href="javascript:void(0)"><?php $nombre = $arr['nombre_carta']; 
+										if (mb_detect_encoding($nombre, 'utf-8', true) === false)
+										{
+											echo $nombre = mb_convert_encoding($nombre, 'utf-8', 'iso-8859-1');
+										}else{
+											echo $nombre = $arr['nombre_carta'];
+										}
+										?></a></td>
+                                <td><span class="label 
+                                <?php 
+									if(trim($arr['nivelcarta'])=="primaria") echo "label-success"; 
+									if(trim($arr['nivelcarta'])=="secundario") echo "label-warning"; 
+									if(trim($arr['nivelcarta'])=="terciaria") echo "label-info"; 
+								?>
+                                "><?php echo $nivelcarta = trim($arr['nivelcarta']); ?></span></td>
+                                <td class="text-center">
+                                    <div class="btn-group">
+                                    	<a href="modcartas.php?acc=M&id=<?php echo $arr['id_carta']; ?>" data-toggle="tooltip" title="Modificar" class="btn btn-xs btn-success"><i class="fa fa-pencil"></i></a>
+                                        <a href="modcartas.php?acc=E&id=<?php echo $arr['id_carta']; ?>" data-toggle="tooltip" title="Borrar" class="btn btn-xs btn-danger"><i class="fa fa-times"></i></a>
+                                    </div>
+                                </td>
+                            </tr>
+                        <?php
+                			}
+              			?>   
+                      </tbody>
+                    </table>
+                    <!-- END Datatables -->
 
                 </div>
                 <!-- END Page Content -->
 
-                <!-- Footer -->
-                <footer>
+               <!-- Footer -->
+                 <footer>
                    2017 &copy; <strong>Odyssey</strong>
                 </footer>
                 <!-- END Footer -->
@@ -512,7 +668,15 @@
         <script src="js/plugins.js"></script>
         <script src="js/main.js"></script>
 
-        <!-- ckeditor.js, load it only in the page you would like to use CKEditor (it's a heavy plugin to include it with the others!) -->
-        <script src="js/ckeditor/ckeditor.js"></script>
+        <!-- Javascript code only for this page -->
+        <script>
+            $(function () {
+                /* Initialize Datatables */
+                $('#example-datatables').dataTable({columnDefs: [{orderable: false, targets: [0]}]});
+                $('#example-datatables2').dataTable();
+                $('#example-datatables3').dataTable();
+                $('.dataTables_filter input').attr('placeholder', 'Search');
+            });
+        </script>
     </body>
 </html>

@@ -19,10 +19,10 @@
                                 <a href="#"><i class="fa fa-shopping-cart"></i>Compras</a>
                                 <ul>
                                     <li>
-                                        <a href="page_tables.html"><i class="fa fa-search-plus"></i>Busqueda</a>
+                                        <a href="buscar.php"><i class="fa fa-search-plus"></i>Busqueda</a>
                                     </li>
                                     <li>
-                                        <a href="page_datatables.html"><i class="fa fa-th"></i>Items de busqueda</a>
+                                        <a href="abmcartas.php"><i class="fa fa-th"></i>Items de busqueda</a>
                                     </li>
                                 </ul>
                             </li>

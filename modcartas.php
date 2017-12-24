@@ -1,5 +1,5 @@
 <?php
-require_once("funciones.php");
+require_once("funciones.inc.php");
 error_reporting(0);
 if (falta_logueo())
 { 
@@ -7,137 +7,110 @@ if (falta_logueo())
 	exit();
 }
 
+$acc = trim($_GET['acc']);
+$id  = trim($_GET['id']);
 
-	/* CANTIDAD DE PRODUCTOS VENDIDOS */	
-	$sql_cantiProdVen = "select count(*) as cantiProdVen from stock_actual WHERE estado_venta LIKE 'vendido'";
-	#echo $sql_cantiProdVen; // exit();
-	$db_cantiProdVen  = conectar();
+//Muestro lo que voy a modificar o eliminar
+if($acc == "M" || $acc == "E")
+{ 
+	$sqla = "select * from cartasabuscar where id_carta = '$id' ";
+	#echo $sqla; // exit();
+	$dba  = conecto();
 	 
-	$r_cantiProdVen   = mysqli_query($db_cantiProdVen, $sql_cantiProdVen);
+	$ra   = mysqli_query($dba, $sqla);
 	
-	if($r_cantiProdVen == false)
+	if($ra == false)
 	{
-		mysqli_close($db_cantiProdVen);
-		$error = "Error: (" . mysqli_errno() . ") " . mysqli_error().")";
+		mysqli_close($dba);
+		$error = "Error: (" . mysql_errno() . ") " . mysql_error().")";
 	}
-		mysqli_close($db_cantiProdVen);
-	
-	$arrx_cantiProdVen = mysqli_fetch_array($r_cantiProdVen);
-	$cantiProdVen = $arrx_cantiProdVen['cantiProdVen'];
-	#echo 'canti:'.$cantiProdVen;
-	/*FIN CANTIDAD DE PRODUCTOS VENDIDOS */	
+		mysqli_close($dba);
 
-	/* CANTIDAD DE PRODUCTOS CARGADOS */	
-	$sql_totalProdCargados = "select count(*) as totalProdCargados from stock_actual";
-	#echo $sql_cantiProdVen; // exit();
-	$db_totalProdCargados  = conectar();
-	 
-	$r_totalProdCargados   = mysqli_query($db_totalProdCargados, $sql_totalProdCargados);
-	
-	if($r_totalProdCargados == false)
-	{
-		mysqli_close($db_totalProdCargados);
-		$error = "Error: (" . mysqli_errno() . ") " . mysqli_error().")";
+ 	while ($arr = mysqli_fetch_array($ra))		
+	{	
+		$descripcion = trim($arr['nombre_carta']);
 	}
-		mysqli_close($db_totalProdCargados);
-	
-	$arrx_totalProdCargados = mysqli_fetch_array($r_totalProdCargados);
-	$totalProdCargados = $arrx_totalProdCargados['totalProdCargados'];
-	#echo 'canti:'.$totalProdCargados;
-	/*FIN CANTIDAD DE PRODUCTOS CARGADOS */	
+}
+
+if($_POST)
+{//SEGUNDOS POST
+
+
+	if($_POST['BTNMOD'])
+	{//si es una modificacion
+		$XTXTdescri	 = (trim($_POST['TXTdescri']));
+		$nivel 		 = trim($_POST['nivel']);
+		$id			 = trim($_GET['id']);
 		
-
-	/* CANTIDAD DE DINERO INVERTIDO */	
-	$sql_totalDinInv = " SELECT SUM(precio_compra) as total FROM stock_actual ";
-	#echo $sql_cantiProdVen; // exit();
-	$db_totalDinInv  = conectar();
-	 
-	$r_totalDinInv   = mysqli_query($db_totalDinInv, $sql_totalDinInv);
-	
-	if($r_totalDinInv == false)
-	{
-		mysqli_close($db_totalDinInv);
-		$error = "Error: (" . mysqli_errno() . ") " . mysqli_error().")";
-	}
-		mysqli_close($db_totalDinInv);
-	
-	$arrx_totalDinInv = mysqli_fetch_array($r_totalDinInv);
-	$totalDinInv = $arrx_totalDinInv['total'];
-	#echo 'canti:'.$totalDinInv;
-	/*FIN CANTIDAD DE DINERO INVERTIDO */	
+		$todo_ok = true;
 		
-	$totalDinRec = 0;
-	
-
-	/* CANTIDAD DE DINERO GANADO */	
-	$sql_totalDinRec = " SELECT total FROM ( SELECT SUM(CASE WHEN precio_venta >0 THEN (precio_venta-precio_compra) ELSE 0 END) total from `stock_actual` ) as a ";
-	#echo $sql_cantiProdVen; // exit();
-	$db_totalDinRec  = conectar();
-	 
-	$r_totalDinRec   = mysqli_query($db_totalDinRec, $sql_totalDinRec);
-	
-	if($r_totalDinRec == false)
-	{
-		mysqli_close($db_totalDinRec);
-		$error = "Error: (" . mysqli_errno() . ") " . mysqli_error().")";
-	}
-		mysqli_close($db_totalDinRec);
-	
-	$arrx_totalDinRec = mysqli_fetch_array($r_totalDinRec);
-	$totalDinRec = $arrx_totalDinRec['total'];
-	#echo 'canti:'.$totalDinInv;
-	/*FIN CANTIDAD DE DINERO GANADO */
+		if(strlen($XTXTdescri)==0)
+		{
+			$mal_TXTdescri 	 = true;
+			$todo_ok = false;
+		}
 		
-	$cantiUsers = 0;
-
-
-	/* CANTIDAD DE CLIENTES 	
-	$sql_cantiUsers = " select count(*) as canti from clientes";
-	#echo $sql_cantiProdVen; // exit();
-	$db_cantiUsers  = conectar();
-	 
-	$r_cantiUsers   = mysqli_query($db_cantiUsers, $sql_cantiUsers);
+		if($todo_ok==true)
+		{#Si esta todo bien	
 	
-	if($r_cantiUsers == false)
-	{
-		mysqli_close($db_cantiUsers);
-		$error = "Error: (" . mysqli_errno() . ") " . mysqli_error().")";
+			$sqla = "UPDATE cartasabuscar SET nombre_carta = '".$XTXTdescri."', nivelcarta = '".$nivel."' where id_carta = '$id' ";
+			#echo $sqla;  exit();
+			$dba  = conecto();
+			 
+			$ra   = mysqli_query($dba, $sqla);
+			
+			if($ra == false)
+			{
+				mysqli_close($dba);
+				$error = "Error: (" . mysql_errno() . ") " . mysql_error().")";
+			}
+				mysqli_close($dba);		
+			
+			
+			echo "<script language='javascript'>
+					 alert('REGISTRO MODIFICADO');
+					window.location.href='abmcartas.php'; </script>";
+		}
+	}//Fin si es una modificacion
+
+	if($_POST['BTNELI']){//si ELIMINO
+		
+		$XTXTdescri	= (trim($_POST['TXTdescri']));
+		$id 		= trim($_GET['id']);
+		
+		$Xtodo_ok = true;
+		
+		if($Xtodo_ok==true){#Si esta todo bien	
+			$db  = conecto();
+			$sql = " DELETE FROM cartasabuscar where id_carta = '".$id."' ";	
+				//echo $sql; exit();									
+			$r   = mysqli_query($db, $sql);
+
+				if ($r == false){
+                        mysqli_close($db);
+                        $error = "Error: (" . mysql_errno() . ") " . mysql_error().")";
+                        //gestion_errores();
+                 }
+                        mysqli_close($db);
+		
+				echo "<script language='javascript'>
+					 alert('REGISTRO ELIMINADO');
+					window.location.href='abmcartas.php'; </script>";
+								
+		}#Fin Si esta todo bien			
 	}
-		mysqli_close($db_cantiUsers);
-	
-	$arrx_cantiUsers = mysqli_fetch_array($r_cantiUsers);
-	$cantiUsers = $arrx_cantiUsers['canti'];
-	#echo 'canti:'.$cantiUsers;
-	/*FIN CANTIDAD DE CLIENTES */	
-	
-	
-	/*----------------------------------------------*/
-	/*-----------------LISTADOS---------------------*/
-	
-
-	/* LISTADO DE PEDIDOS */
-	$sql_listaPedidos = " SELECT * FROM `stock_actual` LEFT JOIN usuarios ON usuarios.id_usuario = stock_actual.id_usuario_venta LEFT JOIN cards_scg ON cards_scg.id = stock_actual.id_card WHERE `estado_venta` != 'DISPONIBLE' order by `fecha_venta` DESC ";
-	#echo $sql_cantiProdVen; // exit();
-	$db_listaPedidos  = conectar();
-	 
-	$r_listaPedidos   = mysqli_query($db_listaPedidos, $sql_listaPedidos);
-	
-	if($r_listaPedidos == false)
-	{
-		mysqli_close($db_listaPedidos);
-		$error = "Error: (" . mysqli_errno() . ") " . mysqli_error().")";
-	}
-		mysqli_close($db_listaPedidos);
-	
-	#echo 'canti:'.$cantiUsers;
-	/*FIN LISTADO DE PEDIDOS */		
+		
+}#Fin segundos post
 ?>
 <!DOCTYPE html>
 <!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
 <!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
     <head>
         <meta charset="utf-8">
-		<title>Odyssey Sistema Total de Administracion</title>
+
+        <title>Odyssey Sistema Total de Administracion</title>
+
+        <meta name="robots" content="noindex, nofollow">
 
         <meta name="viewport" content="width=device-width,initial-scale=1">
 
@@ -435,200 +408,76 @@ if (falta_logueo())
 
             <!-- Inner Container -->
             <div id="inner-container">
-                <!-- Sidebar -->
-                <?php include('sidebar.php'); ?>
-                <!-- END Sidebar -->
+				<?php include('sidebar.php'); ?>
 
                 <!-- Page Content -->
                 <div id="page-content">
                     <!-- Navigation info -->
-                    <ul id="nav-info" class="clearfix">
+    				<ul id="nav-info" class="clearfix">
                         <li><a href="principal.php"><i class="fa fa-home"></i></a></li>
                         <li class="active"><a href="principal.php">Menu Principal</a></li>
                     </ul>
                     <!-- END Navigation info -->
 
-            
+                    <!-- FORMULARIO -->
+                    <form action="" method="post" class="form-horizontal form-box">
+                        <h4 class="form-box-header"><?php if($acc == "M"){ echo "MODIFICACION"; } if($acc == "E"){ echo "ELIMINACION"; }?>  CARTAS</h4>
 
-                    <!-- Tiles -->
-                    <!-- Row 1 -->
-                    <div class="dash-tiles row">
-                        <!-- Column 1 of Row 1 -->
-                        <div class="col-sm-3">
+
+                        <div class="form-group">
+                        	<label class="control-label col-md-2" for="example-input-normal">DESCRIPCION</label>
+                            <div class="col-md-3">
+                            	<input type="text" id="TXTdescri" name="TXTdescri" class="form-control" value="<?php echo $descripcion; ?>" size="100">
+                            </div>
                             
-                            <!-- Total Productos Vendidos Tile -->
-                            <div class="dash-tile dash-tile-balloon clearfix animation-pullDown">
-                                <div class="dash-tile-header">
-                                    <div class="dash-tile-options">
-                                        <a href="javascript:void(0)" class="btn btn-default" data-toggle="tooltip" title="Manage subscribers"><i class="fa fa-cog"></i></a>
-                                    </div>
-                                    Total Productos Vendidos
-                                </div>
-                                <div class="dash-tile-icon"><i class="fa fa-shopping-cart"></i></div>
-                                <div class="dash-tile-text"><?php echo $cantiProdVen ; ?></div>
+                            <?php if($mal_TXTdescri==true){ ?>
+                            <div class="col-md-7">
+                            	<span class="help-block"><code>* - Debe ser correcto</code></span>
                             </div>
-                            <!-- END Total Productos Vendidos Tile -->
-                            
-
-                            <!-- Total Profit Tile -->
-                            <div class="dash-tile dash-tile-leaf clearfix animation-pullDown">
-                                <div class="dash-tile-header">
-                                    <span class="dash-tile-options">
-                                        <a href="javascript:void(0)" class="btn btn-default" data-toggle="popover" data-placement="top" data-content="$500 (230 Sales)" title="Today's profit"><i class="fa fa-credit-card"></i></a>
-                                    </span>
-                                    Total Clientes
-                                </div>
-                                <div class="dash-tile-icon"><i class="fa fa-users"></i></div>
-                                <div class="dash-tile-text"><?php echo $cantiUsers; ?></div>
-                            </div>
-                            <!-- END Total Profit Tile -->
+                            <?php } ?>
                         </div>
-                        <!-- END Column 1 of Row 1 -->
 
-                        <!-- Column 2 of Row 1 -->
-                        <div class="col-sm-3">
-                            
-                            <!-- Total Users Tile -->
-                            <div class="dash-tile dash-tile-ocean clearfix animation-pullDown">
-                                <div class="dash-tile-header">
-                                    <div class="dash-tile-options">
-                                        <div class="btn-group">
-                                            <a href="javascript:void(0)" class="btn btn-default" data-toggle="tooltip" title="Manage Users"><i class="fa fa-cog"></i></a>
-                                        </div>
-                                    </div>
-                                    Total Productos Cargados
-                                </div>
-                                <div class="dash-tile-icon"><i class="fa fa-hdd-o"></i></div>
-                                <div class="dash-tile-text"><?php echo $totalProdCargados; ?></div>
-                            </div>
-                            <!-- END Total Users Tile -->
 
-                           
-                        </div>
-                        <!-- END Column 2 of Row 1 -->
-
-                        <!-- Column 3 of Row 1 -->
-                        <div class="col-sm-3">
-                         <!-- Total Downloads Tile -->
-                            <div class="dash-tile dash-tile-fruit clearfix animation-pullDown">
-                                <div class="dash-tile-header">
-                                    <div class="dash-tile-options">
-                                        <a href="javascript:void(0)" class="btn btn-default" data-toggle="tooltip" title="View popular downloads"><i class="fa fa-asterisk"></i></a>
-                                    </div>
-                                    Total Dinero Invertido
-                                </div>
-                                <div class="dash-tile-icon"><i class="fa fa-money"></i></div>
-                                <div class="dash-tile-text"><?php echo $totalDinInv ;?></div>
-                            </div>
-                            <!-- END Total Downloads Tile -->
-                        
-                        </div>
-                        <!-- END Column 3 of Row 1 -->
-
-                        <!-- Column 4 of Row 1 -->
-                        <div class="col-sm-3">
-                        
-                        <!-- Popularity Tile -->
-                            <div class="dash-tile dash-tile-oil clearfix animation-pullDown">
-                                <div class="dash-tile-header">
-                                    <div class="dash-tile-options">
-                                        <div class="btn-group">
-                                            <a href="javascript:void(0)" class="btn btn-default" data-toggle="tooltip" title="Share"><i class="fa fa-share-square-o"></i></a>
-                                        </div>
-                                    </div>
-                                    Total Dinero Recaudado
-                                </div>
-                                <div class="dash-tile-icon"><i class="fa fa-money"></i></div>
-                                <div class="dash-tile-text"><?php echo $totalDinRec; ?></div>
-                            </div>
-                            <!-- END Popularity Tile -->
+                        <div class="form-group">
+                        	<label class="control-label col-md-2" for="example-input-normal">Nivel</label>
+                            <div class="col-md-3">
+                           		<select name="nivel" id="nivel" class="form-control select-select2">
+                                  <option value="primaria">primaria</option>
+                                  <option value="secundaria">secundaria</option>
+                                  <option value="terciaria">terciaria</option>
+                                </select></div>
                             
                         </div>
-                        <!-- END Column 4 of Row 1 -->
-                    </div>
-                    <!-- END Row 1 -->
-
-
-                    <!-- Row 3 -->
-                    <div class="row">
-                        <!-- Column 1 of Row 3 -->
-                        <div class="col-sm-6">
-                            <!-- Datatables Tile -->
-                            <div class="dash-tile dash-tile-2x">
-                                <div class="dash-tile-header">
-                                    <div class="dash-tile-options">
-                                        <a href="javascript:void(0)" class="btn btn-default" data-toggle="tooltip" title="Manage Orders"><i class="fa fa-cogs"></i></a>
-                                    </div>
-                                    <i class="fa fa-shopping-cart"></i> Nuevos Pedidos
-                                </div>
-                                <div class="dash-tile-content">
-                                    <div class="dash-tile-content-inner-fluid">
-                                        <table id="dash-example-orders" class="table table-striped table-bordered table-condensed">
-                                            <thead>
-                                                <tr>
-                                                    <th class="hidden-xs hidden-sm hidden-md">#</th>
-                                                     <th><i class="fa fa-shopping-cart"></i> Número</th>
-                                                    <th><i class="fa fa-shopping-cart"></i> Producto</th>                                                   
-                                                    <th class="hidden-xs hidden-sm hidden-md"><i class="fa fa-user"></i> Usuario Venta</th>
-                                                    <th><i class="fa fa-bolt"></i> Status</th>
-                                                    <th class="cell-small"></th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-											<?php 
-												$i=0;
-                                            	while ($arr_listaPedidos = mysqli_fetch_array($r_listaPedidos))		
-                                                {	 
-                                            ?>       
-                                                <tr>
-                                                    <td class="hidden-xs hidden-sm hidden-md"><?php echo $i; ?></td>
-                                                    <td><a href="javascript:void(0)"><?php echo trim($arr_listaPedidos['id_stock']); ?></a></td>
-                                                    <td><a href="javascript:void(0)"><?php echo trim($arr_listaPedidos['card_name']); ?></a></td>
-                                                    <td class="hidden-xs hidden-sm hidden-md"><a href="javascript:void(0)"><?php echo trim($arr_listaPedidos['nombre_usuario']); ?></a></td>
-                                                    <td><?php
-                                                    		if(trim($arr_listaPedidos['estado_venta'])=="RESERVADO") 
-															{
-														?>
-															<span class="label label-warning">RESERVADO</span>
-                                                        <?php
-															}
-														 ?> 
-                                                    	<?php
-                                                    		if(trim($arr_listaPedidos['estado_venta'])=="VENDIDO") 
-															{
-														?>
-															<span class="label label-danger">VENDIDO</span></td>
-                                                        <?php
-															}
-														 ?>    
-                                                    </td>              
-                                                    <td class="text-center">
-                                                        <div class="btn-group">
-                                                            <a href="javascript:void(0)" data-toggle="tooltip" title="Process" class="btn btn-xs btn-primary"><i class="fa fa-book"></i></a>
-                                                            <a href="javascript:void(0)" data-toggle="tooltip" title="Cancel" class="btn btn-xs btn-danger"><i class="fa fa-times"></i></a>
-                                                        </div>
-                                                    </td>
-                                                </tr>
-                                             <?php
-											 	$i++;
-												}
-											 ?>   
-                                               
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </div>
-                            </div>
-                            <!-- END Datatables Tile -->
+ 	 					<div class="form-group ">
+                        	<div class="col-md-10 col-md-offset-2">
+                            	<a href="abmcartas.php"><button formnovalidate type="button" class="btn btn-default">VOLVER AL MENU</button></a>
+                                   
+								<?php
+                                	if($acc == "M")
+                                	{ 
+                                ?>
+                                    <input  name="BTNMOD" type="submit" id="BTNMOD" value=" MODIFICAR " class="btn btn-warning">
+                                <?php			
+                                    } 
+                                    
+                                    if($acc == "E")
+                                    {
+                                ?>	
+                                    <input  name="BTNELI" type="submit" id="BTNELI" value=" ELIMINAR " class="btn btn-danger">
+                                <?php
+                                    }
+                                ?>
+                        	</div>
                         </div>
-                    </div>
-                    <!-- END Row 3 -->
-                    <!-- END Tiles -->
+                                                                           
+                    </form>
+                    <!-- END FORMULARIO -->
+
                 </div>
                 <!-- END Page Content -->
 
                 <!-- Footer -->
-                 <footer>
+                <footer>
                    2017 &copy; <strong>Odyssey</strong>
                 </footer>
                 <!-- END Footer -->
@@ -813,138 +662,7 @@ if (falta_logueo())
         <script src="js/plugins.js"></script>
         <script src="js/main.js"></script>
 
-        <!-- Javascript code only for this page -->
-        <script>
-            $(function () {
-                // Initialize dash Datatables
-                $('#dash-example-orders').dataTable({
-                    columnDefs: [{orderable: false, targets: [0]}],
-                    pageLength: 6,
-                    lengthMenu: [[6, 10, 30, -1], [6, 10, 30, "All"]]
-                });
-                $('.dataTables_filter input').attr('placeholder', 'Search');
-
-                // Dash example stats
-                var dashChart = $('#dash-example-stats');
-
-                var dashChartData1 = [
-                    [0, 200],
-                    [1, 250],
-                    [2, 360],
-                    [3, 584],
-                    [4, 1250],
-                    [5, 1100],
-                    [6, 1500],
-                    [7, 1521],
-                    [8, 1600],
-                    [9, 1658],
-                    [10, 1623],
-                    [11, 1900],
-                    [12, 2100],
-                    [13, 1700],
-                    [14, 1620],
-                    [15, 1820],
-                    [16, 1950],
-                    [17, 2220],
-                    [18, 1951],
-                    [19, 2152],
-                    [20, 2300],
-                    [21, 2325],
-                    [22, 2200],
-                    [23, 2156],
-                    [24, 2350],
-                    [25, 2420],
-                    [26, 2480],
-                    [27, 2320],
-                    [28, 2380],
-                    [29, 2520],
-                    [30, 2590]
-                ];
-                var dashChartData2 = [
-                    [0, 50],
-                    [1, 180],
-                    [2, 200],
-                    [3, 350],
-                    [4, 700],
-                    [5, 650],
-                    [6, 700],
-                    [7, 780],
-                    [8, 820],
-                    [9, 880],
-                    [10, 1200],
-                    [11, 1250],
-                    [12, 1500],
-                    [13, 1195],
-                    [14, 1300],
-                    [15, 1350],
-                    [16, 1460],
-                    [17, 1680],
-                    [18, 1368],
-                    [19, 1589],
-                    [20, 1780],
-                    [21, 2100],
-                    [22, 1962],
-                    [23, 1952],
-                    [24, 2110],
-                    [25, 2260],
-                    [26, 2298],
-                    [27, 1985],
-                    [28, 2252],
-                    [29, 2300],
-                    [30, 2450]
-                ];
-
-                // Initialize Chart
-                $.plot(dashChart, [
-                    {data: dashChartData1, lines: {show: true, fill: true, fillColor: {colors: [{opacity: 0.05}, {opacity: 0.05}]}}, points: {show: true}, label: 'All Visits'},
-                    {data: dashChartData2, lines: {show: true, fill: true, fillColor: {colors: [{opacity: 0.05}, {opacity: 0.05}]}}, points: {show: true}, label: 'Unique Visits'}],
-                    {
-                        legend: {
-                            position: 'nw',
-                            backgroundColor: '#f6f6f6',
-                            backgroundOpacity: 0.8
-                        },
-                        colors: ['#555555', '#db4a39'],
-                        grid: {
-                            borderColor: '#cccccc',
-                            color: '#999999',
-                            labelMargin: 5,
-                            hoverable: true,
-                            clickable: true
-                        },
-                        yaxis: {
-                            ticks: 5
-                        },
-                        xaxis: {
-                            tickSize: 2
-                        }
-                    }
-                );
-
-                // Create and bind tooltip
-                var previousPoint = null;
-                dashChart.bind("plothover", function (event, pos, item) {
-
-                    if (item) {
-                        if (previousPoint !== item.dataIndex) {
-                            previousPoint = item.dataIndex;
-
-                            $("#tooltip").remove();
-                            var x = item.datapoint[0],
-                                y = item.datapoint[1];
-
-                            $('<div id="tooltip" class="chart-tooltip"><strong>' + y + '</strong> visits</div>')
-                                .css({top: item.pageY - 30, left: item.pageX + 5})
-                                .appendTo("body")
-                                .show();
-                        }
-                    }
-                    else {
-                        $("#tooltip").remove();
-                        previousPoint = null;
-                    }
-                });
-            });
-        </script>
+        <!-- ckeditor.js, load it only in the page you would like to use CKEditor (it's a heavy plugin to include it with the others!) -->
+        <script src="js/ckeditor/ckeditor.js"></script>
     </body>
 </html>

@@ -1,143 +1,61 @@
 <?php
-require_once("funciones.php");
-error_reporting(0);
-if (falta_logueo())
-{ 
-	header('location:index.php');
-	exit();
-}
+require_once('DisplayUtils.inc.php');  // functions to aid with display of information
+require_once('funciones.inc.php');
 
+error_reporting(0);  // E_ALLturn on all errors, warnings and notices for easier debugging
+  $Xusuario = '1';
+  $results = '';
 
-	/* CANTIDAD DE PRODUCTOS VENDIDOS */	
-	$sql_cantiProdVen = "select count(*) as cantiProdVen from stock_actual WHERE estado_venta LIKE 'vendido'";
-	#echo $sql_cantiProdVen; // exit();
-	$db_cantiProdVen  = conectar();
+  $endpoint = 'http://svcs.ebay.com/services/search/FindingService/v1';  // URL to call
+  $responseEncoding = 'XML';   // Format of the response
+
+ 
+  $priceRangeMin = 0.0;
+  $itemsPerRange = '1000';
+  //$debug = (boolean) $_POST['Debug'];
+   
+  	$sql 	= "select * from seteosdebusqueda where usuario = '$Xusuario' ";
+	//echo $sql; exit();
+	//$dba  = conecto();
 	 
-	$r_cantiProdVen   = mysqli_query($db_cantiProdVen, $sql_cantiProdVen);
-	
-	if($r_cantiProdVen == false)
+	$ra   = mysqli_query(conecto(),$sql);
+				
+	if (!$ra)
 	{
-		mysqli_close($db_cantiProdVen);
-		$error = "Error: (" . mysqli_errno() . ") " . mysqli_error().")";
+		mysqli_close($ra);
+		$error = "Error: (" . mysql_errno() . ") " . mysql_error().")";
 	}
-		mysqli_close($db_cantiProdVen);
-	
-	$arrx_cantiProdVen = mysqli_fetch_array($r_cantiProdVen);
-	$cantiProdVen = $arrx_cantiProdVen['cantiProdVen'];
-	#echo 'canti:'.$cantiProdVen;
-	/*FIN CANTIDAD DE PRODUCTOS VENDIDOS */	
-
-	/* CANTIDAD DE PRODUCTOS CARGADOS */	
-	$sql_totalProdCargados = "select count(*) as totalProdCargados from stock_actual";
-	#echo $sql_cantiProdVen; // exit();
-	$db_totalProdCargados  = conectar();
+		mysqli_close($ra);	
 	 
-	$r_totalProdCargados   = mysqli_query($db_totalProdCargados, $sql_totalProdCargados);
-	
-	if($r_totalProdCargados == false)
-	{
-		mysqli_close($db_totalProdCargados);
-		$error = "Error: (" . mysqli_errno() . ") " . mysqli_error().")";
-	}
-		mysqli_close($db_totalProdCargados);
-	
-	$arrx_totalProdCargados = mysqli_fetch_array($r_totalProdCargados);
-	$totalProdCargados = $arrx_totalProdCargados['totalProdCargados'];
-	#echo 'canti:'.$totalProdCargados;
-	/*FIN CANTIDAD DE PRODUCTOS CARGADOS */	
-		
+   while ($arr = mysqli_fetch_array($ra))		
+   {	
+   		$site 		= $arr['lugarbusqueda'];
+		$apinumber 	= $arr['apinumber'];
+		//echo "$site".$site;
+   }
 
-	/* CANTIDAD DE DINERO INVERTIDO */	
-	$sql_totalDinInv = " SELECT SUM(precio_compra) as total FROM stock_actual ";
-	#echo $sql_cantiProdVen; // exit();
-	$db_totalDinInv  = conectar();
+////
+  	$sqlb 	= "select * from cartasabuscar ORDER BY `feha_alta` DESC";
+	//echo $sql; exit();
+	//$dbb  = conecto();
 	 
-	$r_totalDinInv   = mysqli_query($db_totalDinInv, $sql_totalDinInv);
-	
-	if($r_totalDinInv == false)
+	$rb   = mysqli_query(conecto(),$sqlb);
+				
+	if (!$rb)
 	{
-		mysqli_close($db_totalDinInv);
-		$error = "Error: (" . mysqli_errno() . ") " . mysqli_error().")";
+		mysqli_close($rb);
+		$error = "Error: (" . mysql_errno() . ") " . mysql_error().")";
 	}
-		mysqli_close($db_totalDinInv);
-	
-	$arrx_totalDinInv = mysqli_fetch_array($r_totalDinInv);
-	$totalDinInv = $arrx_totalDinInv['total'];
-	#echo 'canti:'.$totalDinInv;
-	/*FIN CANTIDAD DE DINERO INVERTIDO */	
-		
-	$totalDinRec = 0;
-	
-
-	/* CANTIDAD DE DINERO GANADO */	
-	$sql_totalDinRec = " SELECT total FROM ( SELECT SUM(CASE WHEN precio_venta >0 THEN (precio_venta-precio_compra) ELSE 0 END) total from `stock_actual` ) as a ";
-	#echo $sql_cantiProdVen; // exit();
-	$db_totalDinRec  = conectar();
+		mysqli_close($rb);	
 	 
-	$r_totalDinRec   = mysqli_query($db_totalDinRec, $sql_totalDinRec);
-	
-	if($r_totalDinRec == false)
-	{
-		mysqli_close($db_totalDinRec);
-		$error = "Error: (" . mysqli_errno() . ") " . mysqli_error().")";
-	}
-		mysqli_close($db_totalDinRec);
-	
-	$arrx_totalDinRec = mysqli_fetch_array($r_totalDinRec);
-	$totalDinRec = $arrx_totalDinRec['total'];
-	#echo 'canti:'.$totalDinInv;
-	/*FIN CANTIDAD DE DINERO GANADO */
-		
-	$cantiUsers = 0;
-
-
-	/* CANTIDAD DE CLIENTES 	
-	$sql_cantiUsers = " select count(*) as canti from clientes";
-	#echo $sql_cantiProdVen; // exit();
-	$db_cantiUsers  = conectar();
-	 
-	$r_cantiUsers   = mysqli_query($db_cantiUsers, $sql_cantiUsers);
-	
-	if($r_cantiUsers == false)
-	{
-		mysqli_close($db_cantiUsers);
-		$error = "Error: (" . mysqli_errno() . ") " . mysqli_error().")";
-	}
-		mysqli_close($db_cantiUsers);
-	
-	$arrx_cantiUsers = mysqli_fetch_array($r_cantiUsers);
-	$cantiUsers = $arrx_cantiUsers['canti'];
-	#echo 'canti:'.$cantiUsers;
-	/*FIN CANTIDAD DE CLIENTES */	
-	
-	
-	/*----------------------------------------------*/
-	/*-----------------LISTADOS---------------------*/
-	
-
-	/* LISTADO DE PEDIDOS */
-	$sql_listaPedidos = " SELECT * FROM `stock_actual` LEFT JOIN usuarios ON usuarios.id_usuario = stock_actual.id_usuario_venta LEFT JOIN cards_scg ON cards_scg.id = stock_actual.id_card WHERE `estado_venta` != 'DISPONIBLE' order by `fecha_venta` DESC ";
-	#echo $sql_cantiProdVen; // exit();
-	$db_listaPedidos  = conectar();
-	 
-	$r_listaPedidos   = mysqli_query($db_listaPedidos, $sql_listaPedidos);
-	
-	if($r_listaPedidos == false)
-	{
-		mysqli_close($db_listaPedidos);
-		$error = "Error: (" . mysqli_errno() . ") " . mysqli_error().")";
-	}
-		mysqli_close($db_listaPedidos);
-	
-	#echo 'canti:'.$cantiUsers;
-	/*FIN LISTADO DE PEDIDOS */		
 ?>
 <!DOCTYPE html>
 <!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
 <!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
     <head>
         <meta charset="utf-8">
-		<title>Odyssey Sistema Total de Administracion</title>
+
+        <title>Odyssey Sistema Total de Administracion</title>
 
         <meta name="viewport" content="width=device-width,initial-scale=1">
 
@@ -436,7 +354,9 @@ if (falta_logueo())
             <!-- Inner Container -->
             <div id="inner-container">
                 <!-- Sidebar -->
-                <?php include('sidebar.php'); ?>
+                <aside id="page-sidebar" class="collapse navbar-collapse navbar-main-collapse">
+                    <?php include('sidebar.php'); ?>
+                </aside>
                 <!-- END Sidebar -->
 
                 <!-- Page Content -->
@@ -448,182 +368,133 @@ if (falta_logueo())
                     </ul>
                     <!-- END Navigation info -->
 
-            
+                    <!-- Editable Datatables -->
+                    <h3 class="page-header page-header-top">Busqueda en Ebay</h3>
 
-                    <!-- Tiles -->
-                    <!-- Row 1 -->
-                    <div class="dash-tiles row">
-                        <!-- Column 1 of Row 1 -->
-                        <div class="col-sm-3">
-                            
-                            <!-- Total Productos Vendidos Tile -->
-                            <div class="dash-tile dash-tile-balloon clearfix animation-pullDown">
-                                <div class="dash-tile-header">
-                                    <div class="dash-tile-options">
-                                        <a href="javascript:void(0)" class="btn btn-default" data-toggle="tooltip" title="Manage subscribers"><i class="fa fa-cog"></i></a>
-                                    </div>
-                                    Total Productos Vendidos
-                                </div>
-                                <div class="dash-tile-icon"><i class="fa fa-shopping-cart"></i></div>
-                                <div class="dash-tile-text"><?php echo $cantiProdVen ; ?></div>
-                            </div>
-                            <!-- END Total Productos Vendidos Tile -->
-                            
-
-                            <!-- Total Profit Tile -->
-                            <div class="dash-tile dash-tile-leaf clearfix animation-pullDown">
-                                <div class="dash-tile-header">
-                                    <span class="dash-tile-options">
-                                        <a href="javascript:void(0)" class="btn btn-default" data-toggle="popover" data-placement="top" data-content="$500 (230 Sales)" title="Today's profit"><i class="fa fa-credit-card"></i></a>
-                                    </span>
-                                    Total Clientes
-                                </div>
-                                <div class="dash-tile-icon"><i class="fa fa-users"></i></div>
-                                <div class="dash-tile-text"><?php echo $cantiUsers; ?></div>
-                            </div>
-                            <!-- END Total Profit Tile -->
-                        </div>
-                        <!-- END Column 1 of Row 1 -->
-
-                        <!-- Column 2 of Row 1 -->
-                        <div class="col-sm-3">
-                            
-                            <!-- Total Users Tile -->
-                            <div class="dash-tile dash-tile-ocean clearfix animation-pullDown">
-                                <div class="dash-tile-header">
-                                    <div class="dash-tile-options">
-                                        <div class="btn-group">
-                                            <a href="javascript:void(0)" class="btn btn-default" data-toggle="tooltip" title="Manage Users"><i class="fa fa-cog"></i></a>
-                                        </div>
-                                    </div>
-                                    Total Productos Cargados
-                                </div>
-                                <div class="dash-tile-icon"><i class="fa fa-hdd-o"></i></div>
-                                <div class="dash-tile-text"><?php echo $totalProdCargados; ?></div>
-                            </div>
-                            <!-- END Total Users Tile -->
-
-                           
-                        </div>
-                        <!-- END Column 2 of Row 1 -->
-
-                        <!-- Column 3 of Row 1 -->
-                        <div class="col-sm-3">
-                         <!-- Total Downloads Tile -->
-                            <div class="dash-tile dash-tile-fruit clearfix animation-pullDown">
-                                <div class="dash-tile-header">
-                                    <div class="dash-tile-options">
-                                        <a href="javascript:void(0)" class="btn btn-default" data-toggle="tooltip" title="View popular downloads"><i class="fa fa-asterisk"></i></a>
-                                    </div>
-                                    Total Dinero Invertido
-                                </div>
-                                <div class="dash-tile-icon"><i class="fa fa-money"></i></div>
-                                <div class="dash-tile-text"><?php echo $totalDinInv ;?></div>
-                            </div>
-                            <!-- END Total Downloads Tile -->
-                        
-                        </div>
-                        <!-- END Column 3 of Row 1 -->
-
-                        <!-- Column 4 of Row 1 -->
-                        <div class="col-sm-3">
-                        
-                        <!-- Popularity Tile -->
-                            <div class="dash-tile dash-tile-oil clearfix animation-pullDown">
-                                <div class="dash-tile-header">
-                                    <div class="dash-tile-options">
-                                        <div class="btn-group">
-                                            <a href="javascript:void(0)" class="btn btn-default" data-toggle="tooltip" title="Share"><i class="fa fa-share-square-o"></i></a>
-                                        </div>
-                                    </div>
-                                    Total Dinero Recaudado
-                                </div>
-                                <div class="dash-tile-icon"><i class="fa fa-money"></i></div>
-                                <div class="dash-tile-text"><?php echo $totalDinRec; ?></div>
-                            </div>
-                            <!-- END Popularity Tile -->
-                            
-                        </div>
-                        <!-- END Column 4 of Row 1 -->
+					<?php
+						$results = "";
+						$nombreviejo = "";
+   
+						while ($arrb = mysqli_fetch_array($rb))	//todas las cartas	a buscar..
+						{
+							$results = "";
+								
+							$nombretitulo = $arrb['nombre_carta'];
+							$nivelcarta	  = $arrb['nivelcarta'];
+								
+							$bodytag = str_replace(" ", "+", "$nombretitulo");
+					?>
+                    <div class="push">
+                        <h4 class="sub-header"><a href="http://sales.starcitygames.com/search.php?substring='<?php echo trim($bodytag); ?>'"><?php echo trim($nombretitulo); ?></a></h4>
                     </div>
-                    <!-- END Row 1 -->
+                    <?php
+							$findCard = $arrb['nombre_carta'].' magic the gathering';
+						
+							$safeQuery = urlencode (utf8_encode($findCard));
+							$priceRangeMax = '500';
 
+							$apicall = "$endpoint?OPERATION-NAME=findItemsAdvanced"
+								 . "&SERVICE-VERSION=1.0.0"
+								 . "&GLOBAL-ID=$site"
+								 . "&SECURITY-APPNAME=$apinumber" //replace with your app id
+								 . "&keywords=$safeQuery"
+								 . "&paginationInput.entriesPerPage=$itemsPerRange"
+								 . "&sortOrder=EndTimeSoonest"
+								 . "&itemFilter(0).name=ListingType"
+								 . "&itemFilter(0).value(0)=Auction"
+								 . "&itemFilter(1).name=MinPrice"
+								 . "&itemFilter(1).value=$priceRangeMin"
+								 . "&itemFilter(2).name=MaxPrice"
+								 . "&itemFilter(2).value=$priceRangeMax"		 		 
+								 . "&RESPONSE-DATA-FORMAT=$responseEncoding";
+	
 
-                    <!-- Row 3 -->
-                    <div class="row">
-                        <!-- Column 1 of Row 3 -->
-                        <div class="col-sm-6">
-                            <!-- Datatables Tile -->
-                            <div class="dash-tile dash-tile-2x">
-                                <div class="dash-tile-header">
-                                    <div class="dash-tile-options">
-                                        <a href="javascript:void(0)" class="btn btn-default" data-toggle="tooltip" title="Manage Orders"><i class="fa fa-cogs"></i></a>
-                                    </div>
-                                    <i class="fa fa-shopping-cart"></i> Nuevos Pedidos
-                                </div>
-                                <div class="dash-tile-content">
-                                    <div class="dash-tile-content-inner-fluid">
-                                        <table id="dash-example-orders" class="table table-striped table-bordered table-condensed">
-                                            <thead>
-                                                <tr>
-                                                    <th class="hidden-xs hidden-sm hidden-md">#</th>
-                                                     <th><i class="fa fa-shopping-cart"></i> Número</th>
-                                                    <th><i class="fa fa-shopping-cart"></i> Producto</th>                                                   
-                                                    <th class="hidden-xs hidden-sm hidden-md"><i class="fa fa-user"></i> Usuario Venta</th>
-                                                    <th><i class="fa fa-bolt"></i> Status</th>
-                                                    <th class="cell-small"></th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-											<?php 
-												$i=0;
-                                            	while ($arr_listaPedidos = mysqli_fetch_array($r_listaPedidos))		
-                                                {	 
-                                            ?>       
-                                                <tr>
-                                                    <td class="hidden-xs hidden-sm hidden-md"><?php echo $i; ?></td>
-                                                    <td><a href="javascript:void(0)"><?php echo trim($arr_listaPedidos['id_stock']); ?></a></td>
-                                                    <td><a href="javascript:void(0)"><?php echo trim($arr_listaPedidos['card_name']); ?></a></td>
-                                                    <td class="hidden-xs hidden-sm hidden-md"><a href="javascript:void(0)"><?php echo trim($arr_listaPedidos['nombre_usuario']); ?></a></td>
-                                                    <td><?php
-                                                    		if(trim($arr_listaPedidos['estado_venta'])=="RESERVADO") 
-															{
-														?>
-															<span class="label label-warning">RESERVADO</span>
-                                                        <?php
-															}
-														 ?> 
-                                                    	<?php
-                                                    		if(trim($arr_listaPedidos['estado_venta'])=="VENDIDO") 
-															{
-														?>
-															<span class="label label-danger">VENDIDO</span></td>
-                                                        <?php
-															}
-														 ?>    
-                                                    </td>              
-                                                    <td class="text-center">
-                                                        <div class="btn-group">
-                                                            <a href="javascript:void(0)" data-toggle="tooltip" title="Process" class="btn btn-xs btn-primary"><i class="fa fa-book"></i></a>
-                                                            <a href="javascript:void(0)" data-toggle="tooltip" title="Cancel" class="btn btn-xs btn-danger"><i class="fa fa-times"></i></a>
-                                                        </div>
-                                                    </td>
-                                                </tr>
-                                             <?php
-											 	$i++;
-												}
-											 ?>   
-                                               
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </div>
-                            </div>
-                            <!-- END Datatables Tile -->
-                        </div>
-                    </div>
-                    <!-- END Row 3 -->
-                    <!-- END Tiles -->
+ 							   	$resp = simplexml_load_file($apicall);
+
+								if ($resp && $resp->paginationOutput->totalEntries > 0) 
+								{
+								?>
+                                	<h5>Total items : <?php echo $resp->paginationOutput->totalEntries; ?></h5><br />
+                                    <table id="example-editable-datatables" class="table table-bordered table-hover">
+                                    <thead>                       
+                                        <tr>
+                                        	<th class="cell-small"></th>
+                                            <th>Foto</th>
+                                            <th>Titulo</th>
+                                            <th class="cell-small"><i class="fa fa-money" aria-hidden="true"></i> Precio</th>
+                                            <th class="cell-small"><i class="fa fa-truck"></i> Shipping</th>
+                                            <th class="cell-small"><i class="fa fa-percent"></i> Total</th>
+                                            <th class="cell-small">Moneda</th>
+                                            <th class="cell-small"><i class="fa fa-clock-o"></i> Tiempo Faltante</th>
+                                            <th class="cell-small">Otros</th>
+                                        </tr>
+                                    
+                                    </thead> 
+                                    <tbody>   
+                                <?php
+								 
+								  // If the response was loaded, parse it and build links
+								  foreach($resp->searchResult->item as $item)
+								  {
+									if ($item->galleryURL) {
+									  $picURL = $item->galleryURL;
+									} else {
+									  $picURL = "http://pics.ebaystatic.com/aw/pics/express/icons/iconPlaceholder_96x96.gif";
+									}
+									$link  = $item->viewItemURL;
+									$title = $item->title;
+							
+									$price = sprintf("%01.2f", $item->sellingStatus->convertedCurrentPrice);
+									$ship  = sprintf("%01.2f", $item->shippingInfo->shippingServiceCost);
+									$total = sprintf("%01.2f", ((float)$item->sellingStatus->convertedCurrentPrice
+												  + (float)$item->shippingInfo->shippingServiceCost));
+							
+									// Determine currency to display - so far only seen cases where priceCurr = shipCurr, but may be others
+									$priceCurr = (string) $item->sellingStatus->convertedCurrentPrice['currencyId'];
+									$shipCurr  = (string) $item->shippingInfo->shippingServiceCost['currencyId'];
+									if ($priceCurr == $shipCurr) {
+									  $curr = $priceCurr;
+									} else {
+									  $curr = "$priceCurr / $shipCurr";  // potential case where price/ship currencies differ
+									}
+							
+									$timeLeft = getPrettyTimeFromEbayTime($item->sellingStatus->timeLeft);
+									$endTime = strtotime($item->listingInfo->endTime);   // returns Epoch seconds
+									$endTime = $item->listingInfo->endTime;
+							
+									$diasAmostrar = getSoloDias($item->sellingStatus->timeLeft);
+							
+									$formatedTitle = findEditionForAName($nombretitulo,$title);
+									
+									if($diasAmostrar<3)
+									{
+										
+									?>
+                                        <tr id="1">
+                                        	<td id="id1" class="text-center">1</td>
+                                            <td class="text-center"><a href="<?php echo $link; ?>" target="_blank"><img src="<?php echo $picURL; ?>"></a></td>
+                                            <td id="username1" class="editable-td"><a href="<?php echo $link; ?>" target="_blank"><?php echo $title; ?></a></td>
+                                            <td><?php echo $price; ?></td>
+                                            <td><?php echo $ship; ?></td>
+                                            <td><?php echo $total; ?></td>
+                                            <td><?php echo $curr; ?></td>
+                                            <td><?php echo $timeLeft; ?></td>
+                                            <td><?php echo $endTime; ?><br><?php echo $formatedTitle; ?></td>
+                                        </tr>
+                    				<?php
+									}
+								  }
+
+								 ?>    
+                                    </tbody>
+                                </table>
+                                <?php
+								}
+							
+							   } 
+							  
+							?> 
+
                 </div>
                 <!-- END Page Content -->
 
@@ -803,7 +674,7 @@ if (falta_logueo())
         <!--[if lte IE 8]><script src="js/helpers/excanvas.min.js"></script><![endif]-->
 
         <!-- Include Jquery library from Google's CDN but if something goes wrong get Jquery from local file (Remove 'http:' if you have SSL) -->
-        <script src="js/vendor/jquery-1.11.1.min.js"></script>
+        <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
         <script>!window.jQuery && document.write(decodeURI('%3Cscript src="js/vendor/jquery-1.11.1.min.js"%3E%3C/script%3E'));</script>
 
         <!-- Bootstrap.js -->
@@ -816,134 +687,185 @@ if (falta_logueo())
         <!-- Javascript code only for this page -->
         <script>
             $(function () {
-                // Initialize dash Datatables
-                $('#dash-example-orders').dataTable({
-                    columnDefs: [{orderable: false, targets: [0]}],
-                    pageLength: 6,
-                    lengthMenu: [[6, 10, 30, -1], [6, 10, 30, "All"]]
+
+                // Hold our table to a variable
+                var exampleDatatable = $('#example-editable-datatables');
+
+                /*
+                 * Function for handing the data after a cell has been edited
+                 *
+                 * From here you can send the data with ajax (for example) to handle in your backend
+                 *
+                 */
+                var reqHandle = function (value, settings) {
+
+                    // this, the edited td element
+                    console.log(this);
+
+                    // $(this).attr('id'), get the id of the edited td
+                    console.log($(this).attr('id'));
+
+                    // $(this).parent('tr').attr('id'), get the id of the row
+                    console.log($(this).parent('tr').attr('id'));
+
+                    // value, the new value the user submitted
+                    console.log(value);
+
+                    // settings, the settings of jEditable
+                    console.log(settings);
+
+                    // Here you can send and handle the data in your backend
+                    // ...
+
+                    // For this example, just return the data the user submitted
+                    return(value);
+                };
+
+                /*
+                 * Function for initializing jEditable handlers to the table
+                 *
+                 * For advance usage you can check http://www.appelsiini.net/projects/jeditable
+                 *
+                 */
+                var initEditable = function (rowID) {
+
+                    // Hold the elements that the jEditable will be initialized
+                    var elements;
+
+                    // If we don't have a rowID apply to all td elements with .editable-td class
+                    if (!rowID)
+                        elements = $('td.editable-td', editableTable.fnGetNodes());
+                    else
+                        elements = $('td.editable-td', editableTable.fnGetNodes(rowID));
+
+                    elements.editable(reqHandle, {
+                        "callback": function (sValue, y) {
+                            // Little fix for responsive table after edit
+                            exampleDatatable.css('width', '100%');
+                        },
+                        "submitdata": function (value, settings) {
+                            // Sent some extra data
+                            return {
+                                "row_id": this.parentNode.getAttribute('id'),
+                                "column": editableTable.fnGetPosition(this)[2]
+                            };
+                        },
+                        indicator: '<i class="fa fa-spinner fa-spin"></i>',
+                        cssclass: 'remove-margin',
+                        submit: 'Ok',
+                        cancel: 'Cancel'
+                    });
+                };
+
+                /*
+                 * Function for deleting table row
+                 *
+                 */
+                var delHandle = function () {
+
+                    // When the user clicks on a delete button
+                    $('body').on('click', 'a.delRow', function () {
+                        var aPos = editableTable.fnGetPosition(this.parentNode);
+                        var aData = editableTable.fnGetData(aPos[0]);
+                        var rowID = $(this).parents('tr').attr('id');
+
+                        // Here you can handle the deletion of the row in your backend
+                        // ...
+
+                        // Delete row if success with the backend
+                        editableTable.fnDeleteRow(aPos[0]);
+                    });
+                };
+
+                /*
+                 * Function for adding table row
+                 *
+                 */
+                var addHandle = function () {
+
+                    // When the user clicks on the 'Add New User' button
+                    $("#addRow").click(function () {
+
+                        // Here you can handle your backend data (eg: adding a row to database and return the id of the row)
+
+                        // ..
+
+                        // Create a new row and set it up
+                        var rowID = editableTable.fnAddData(['', '', '', '', '']);
+
+                        // Example id, here you should add the one you created in your backend
+                        var id = rowID[0] + 1;
+
+                        // Update the id cell, so that our table redraw and resort (new row goes first in datatable)
+                        editableTable.fnUpdate(id, rowID[0], 1);
+
+                        // Get the new row
+                        var nRow = editableTable.fnGetNodes(rowID[0]);
+
+                        /*
+                         * In the following section you should set up your cells
+                         */
+                        // Add id to tr element
+                        $(nRow).attr('id', id);
+
+                        // Setup first cell with the delete button
+                        $(nRow)
+                            .children('td:nth-child(1)')
+                            .addClass('text-center')
+                            .html('<a href="javascript:void(0)" id="delRow' + id + '" class="btn btn-xs btn-danger delRow"><i class="fa fa-times"></i></a>');
+
+                        // Setup second cell (id)
+                        $(nRow)
+                            .children('td:nth-child(2)')
+                            .attr('id', 'id' + id)
+                            .addClass('text-center');
+
+                        // Setup third cell (username)
+                        $(nRow)
+                            .children('td:nth-child(3)')
+                            .addClass('editable-td')
+                            .attr('id', 'username' + id);
+
+                        // Setup fourth cell (email)
+                        $(nRow)
+                            .children('td:nth-child(4)')
+                            .addClass('editable-td')
+                            .addClass('hidden-xs hidden-sm')
+                            .attr('id', 'email' + id);
+
+                        // Setup fifth cell (notes)
+                        $(nRow)
+                            .children('td:nth-child(5)')
+                            .addClass('editable-td')
+                            .addClass('hidden-xs hidden-sm')
+                            .attr('id', 'notes' + id);
+
+                        // Setup your other cells the same way (if you have more)
+                        // ...
+
+                        // Initialize jEditable to the new row
+                        initEditable(rowID[0]);
+
+                        // Little fix for responsive table after adding a new row
+                        exampleDatatable.css('width', '100%');
+                    });
+                };
+
+                // Initialize Datatables
+                var editableTable = exampleDatatable.dataTable({
+                    order: [[1, 'desc']],
+                    columnDefs: [{orderable: false, targets: [0]}]
                 });
                 $('.dataTables_filter input').attr('placeholder', 'Search');
 
-                // Dash example stats
-                var dashChart = $('#dash-example-stats');
+                // Initialize jEditable
+                initEditable();
 
-                var dashChartData1 = [
-                    [0, 200],
-                    [1, 250],
-                    [2, 360],
-                    [3, 584],
-                    [4, 1250],
-                    [5, 1100],
-                    [6, 1500],
-                    [7, 1521],
-                    [8, 1600],
-                    [9, 1658],
-                    [10, 1623],
-                    [11, 1900],
-                    [12, 2100],
-                    [13, 1700],
-                    [14, 1620],
-                    [15, 1820],
-                    [16, 1950],
-                    [17, 2220],
-                    [18, 1951],
-                    [19, 2152],
-                    [20, 2300],
-                    [21, 2325],
-                    [22, 2200],
-                    [23, 2156],
-                    [24, 2350],
-                    [25, 2420],
-                    [26, 2480],
-                    [27, 2320],
-                    [28, 2380],
-                    [29, 2520],
-                    [30, 2590]
-                ];
-                var dashChartData2 = [
-                    [0, 50],
-                    [1, 180],
-                    [2, 200],
-                    [3, 350],
-                    [4, 700],
-                    [5, 650],
-                    [6, 700],
-                    [7, 780],
-                    [8, 820],
-                    [9, 880],
-                    [10, 1200],
-                    [11, 1250],
-                    [12, 1500],
-                    [13, 1195],
-                    [14, 1300],
-                    [15, 1350],
-                    [16, 1460],
-                    [17, 1680],
-                    [18, 1368],
-                    [19, 1589],
-                    [20, 1780],
-                    [21, 2100],
-                    [22, 1962],
-                    [23, 1952],
-                    [24, 2110],
-                    [25, 2260],
-                    [26, 2298],
-                    [27, 1985],
-                    [28, 2252],
-                    [29, 2300],
-                    [30, 2450]
-                ];
+                // Handle rows deletion
+                delHandle();
 
-                // Initialize Chart
-                $.plot(dashChart, [
-                    {data: dashChartData1, lines: {show: true, fill: true, fillColor: {colors: [{opacity: 0.05}, {opacity: 0.05}]}}, points: {show: true}, label: 'All Visits'},
-                    {data: dashChartData2, lines: {show: true, fill: true, fillColor: {colors: [{opacity: 0.05}, {opacity: 0.05}]}}, points: {show: true}, label: 'Unique Visits'}],
-                    {
-                        legend: {
-                            position: 'nw',
-                            backgroundColor: '#f6f6f6',
-                            backgroundOpacity: 0.8
-                        },
-                        colors: ['#555555', '#db4a39'],
-                        grid: {
-                            borderColor: '#cccccc',
-                            color: '#999999',
-                            labelMargin: 5,
-                            hoverable: true,
-                            clickable: true
-                        },
-                        yaxis: {
-                            ticks: 5
-                        },
-                        xaxis: {
-                            tickSize: 2
-                        }
-                    }
-                );
-
-                // Create and bind tooltip
-                var previousPoint = null;
-                dashChart.bind("plothover", function (event, pos, item) {
-
-                    if (item) {
-                        if (previousPoint !== item.dataIndex) {
-                            previousPoint = item.dataIndex;
-
-                            $("#tooltip").remove();
-                            var x = item.datapoint[0],
-                                y = item.datapoint[1];
-
-                            $('<div id="tooltip" class="chart-tooltip"><strong>' + y + '</strong> visits</div>')
-                                .css({top: item.pageY - 30, left: item.pageX + 5})
-                                .appendTo("body")
-                                .show();
-                        }
-                    }
-                    else {
-                        $("#tooltip").remove();
-                        previousPoint = null;
-                    }
-                });
+                // Handle new rows
+                addHandle();
             });
         </script>
     </body>
