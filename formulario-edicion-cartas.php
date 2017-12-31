@@ -1,19 +1,25 @@
 <?php
+require('funciones.php');
 require('clases/abm-cartas.class.php');
 require('clases/GSCarta.class.php');
 
 $id=$_GET['id'];
+$lugar=$_GET['lugar'];
+//lugar=buscador-cartas
 
 	if($_POST)
 	{
 		if ($_POST['modificar'])
 		{
-			$nombre=trim($_POST['card_name']);
-			$edicion=trim($_POST['card_edition']);
-			$url=trim($_POST['card_url']);
-			$precio=trim($_POST['card_price']);
-			$id=trim($_POST['id']);
+			$nombre 	= trim($_POST['card_name']);
+			$edicion 	= trim($_POST['card_edition']);
+			$url 		= trim($_POST['card_url']);
+			$precio		= trim($_POST['card_price']);
+			$id 		= trim($_POST['id']);
+			$lugar		= trim($_POST['lugar']);
+			
 			$todo_ok = true;
+			
         if (strlen($nombre) == 0) {
             $mal_nombre = true;
             $todo_ok = false;
@@ -30,17 +36,18 @@ $id=$_GET['id'];
             $mal_precio = true;
             $todo_ok = false;
         }
-        if ($todo_ok == true) {
-					$gscarta=new GSCarta();
-					$gscarta->setNombre($nombre);
-					$gscarta->setEdicion($edicion);
-					$gscarta->setUrl($url);
-					$gscarta->setPrecio($precio);
-					$abmcarta=new ABMCarta();
-					$updateOK = $abmcarta->updateCarta($gscarta,$id);
+        if ($todo_ok == true) 
+		{
+			$gscarta=new GSCarta();
+			$gscarta->setNombre($nombre);
+			$gscarta->setEdicion($edicion);
+			$gscarta->setUrl($url);
+			$gscarta->setPrecio($precio);
+			$abmcarta=new ABMCarta();
+			$updateOK = $abmcarta->updateCarta($gscarta,$id);
 
-			}
 		}
+		}//fin modificar
 	}
 	else
 	{
@@ -57,6 +64,8 @@ $id=$_GET['id'];
 	}
 
 	if (!isset($updateOK)) $updateOK = 0;
+	if (!isset($lugar)) $lugar = "principal";
+
 	if (!isset($mal_nombre)) $mal_nombre = 0;
 	if (!isset($mal_edicion)) $mal_edicion = 0;
 	if (!isset($mal_url)) $mal_url = 0;
@@ -106,10 +115,13 @@ $id=$_GET['id'];
         <script src="js/vendor/modernizr-respond.min.js"></script>
 		<script>
 			var updateOK = <?php echo $updateOK; ?>;
+			var lugar	 = "<?php echo trim($lugar); ?>" + ".php";
+
 			if(updateOK==true)
 			{
 				alert("Carta modificada correctamente.");
-				window.location.href = 'listado-cartas.php';
+				window.location.href = lugar;
+				//listado-cartas
 			}
 		</script>        
     </head>
@@ -380,17 +392,18 @@ $id=$_GET['id'];
 
                 <!-- Page Content -->
                 <div id="page-content">
-                    <!-- Navigation info -->
+                   <!-- Navigation info -->
                     <ul id="nav-info" class="clearfix">
-                        <li><a href="index.html"><i class="fa fa-home"></i></a></li>
-                        <li><a href="javascript:void(0)">Forms</a></li>
-                        <li class="active"><a href="">Components</a></li>
+                        <li><a href="principal.php"><i class="fa fa-home"></i></a></li>
+                        <li class="active"><a href="principal.php">Menu Principal</a></li>
                     </ul>
                     <!-- END Navigation info -->
 
                     <!-- FORMULARIO -->
                     <form action="" method="post" class="form-horizontal form-box" >
                     <input type="hidden" name="id" value=<?php echo $id; ?> />
+                    <input type="hidden" name="lugar" value=<?php echo $lugar; ?> />
+                    
                         <h4 class="form-box-header">Editar Carta</h4>
                         <div class="form-box-content">
                         
@@ -432,9 +445,9 @@ $id=$_GET['id'];
                             </div>
  
                              <div class="form-group">
-                                <label class="control-label col-md-2" for="example-input-small">URL:</label>
+                                <label class="control-label col-md-2" for="example-input-small">Precio Carta:</label>
                                 <div class="col-md-3">
-                                    <input type="text" id="card_price" name="card_price" maxlength="250" tabindex="1" value="<?php echo $precio; ?>" class="form-control input-sm"/>
+                                	<textarea rows="10" cols="50" id="card_price" name="card_price" class="form-control"><?php echo trim($precio); ?></textarea>
                                 </div>
                                 <?php if($mal_precio==true){ ?>	        
                                 <div class="col-md-7">

@@ -47,7 +47,10 @@
                                         <a href="abm-usuarios.php"><i class="fa fa-user-circle"></i>ABM Usuarios</a>
                                     </li>
                                     <li>
-                                        <a href="buscador-cartas.php"><i class="fa fa-user-circle"></i>Buscar Cartas</a>
+                                        <a href="buscador-cartas.php"><i class="fa fa-user-circle"></i>Buscar Cartas Existentes</a>
+                                    </li>
+                                    <li>
+                                        <a href="listado-cartas.php"><i class="fa fa-user-circle"></i>Listar Cartas Existentes</a>
                                     </li>
                                 </ul>
                             </li>                            

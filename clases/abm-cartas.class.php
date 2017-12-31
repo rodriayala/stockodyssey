@@ -1,5 +1,4 @@
 <?php
-require('funciones.php');
 
 class ABMCarta {
 
@@ -125,8 +124,9 @@ class ABMCarta {
   public function getCartaByNombre($nombre)
   {
     $connection = conectar();
-    $query = "SELECT * FROM cards_scg WHERE LOWER (card_name) like '%". strtolower($nombre)."%'";
-    $result = mysqli_query($connection,$query);
+    $query = "SELECT * FROM cards_scg WHERE LOWER (card_name) like '%". strtolower($nombre)."%' order by card_name limit 100";
+    #echo $query;
+	$result = mysqli_query($connection,$query);
 
     if (!$result)
     {

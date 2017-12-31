@@ -3,18 +3,70 @@ require('funciones.php');
 require('clases/abm-cartas.class.php');
 require('clases/GSCarta.class.php');
 
-
+error_reporting(0);
 if ($_POST)
 {
 	if ($_POST['buscar'])
 	{
-		$nombre=$_POST['card_name'];
+		$nombre=trim($_POST['nombre']);
 		$abmcarta=new ABMCarta;
 		$result =$abmcarta->getCartaByNombre($nombre);
 	
 	}
+}else{
+	//$abmcarta=new ABMCarta;
+	//$result =$abmcarta->getAllCartas();
+	
+	//Primer pasada
+	$TAMANO_PAGINA	= 200;
+	$pagina = $_GET['pagina'];
+	
+	if (!$pagina)
+	{
+	$sqla = "select count(*) as canti from cards_scg order by id";
+	#echo $sqla; // exit();
+	$dba  = conectar();
+	 
+	$ra   = mysqli_query($dba, $sqla);
+	
+	if($ra == false)
+	{
+		mysqli_close($dba);
+		$error = "Error: (" . mysql_errno() . ") " . mysql_error().")";
+	}
+		mysqli_close($dba);
+	
+	$arrx = mysqli_fetch_array($ra);
+	$cantidad = $arrx['canti'];
+	#echo 'canti:'.$cantidad;
+	
+	$_SESSION['canti'] = $cantidad;
+	$inicio = 0;
+	$pagina = 1;
+	}else{
+		$cantidad = $_SESSION['canti'];
+		$inicio = ($pagina-1) * $TAMANO_PAGINA;
+	}
+			
+	$total_paginas = ceil($cantidad/$TAMANO_PAGINA);
+						 
+	if ($cantidad > 0)
+	{ 
+		$sqlb = "select * from cards_scg order by id DESC LIMIT $TAMANO_PAGINA OFFSET $inicio ";
+		//echo $sqlb; // exit();
+		$dbb  = conectar();
+		 
+		$result   = mysqli_query($dbb, $sqlb);
+		
+		if($result == false)
+		{
+			mysqli_close($dbb);
+			$error = "Error: (" . mysql_errno() . ") " . mysql_error().")";
+		}
+			mysqli_close($dbb);						
+	}
+	
 }
-
 ?>
 <!DOCTYPE html>
 <!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
@@ -328,20 +380,19 @@ if ($_POST)
                 <div id="page-content">
                     <!-- Navigation info -->
                     <ul id="nav-info" class="clearfix">
-                        <li><a href="index.html"><i class="fa fa-home"></i></a></li>
-                        <li><a href="javascript:void(0)">Forms</a></li>
-                        <li class="active"><a href="">Components</a></li>
+                        <li><a href="principal.php"><i class="fa fa-home"></i></a></li>
+                        <li class="active"><a href="principal.php">Menu Principal</a></li>
                     </ul>
                     <!-- END Navigation info -->
 
                     <!-- FORMULARIO -->
-                    <form action="page_form_components.html" method="post" class="form-horizontal form-box" onsubmit="return false;">
-                        <h4 class="form-box-header">BUSCADOR DE CARTAS</h4>
+                    <form action="" method="post" class="form-horizontal form-box">
+                        <h4 class="form-box-header">LISTADO DE CARTAS EXISTENTES</h4>
  						<div class="form-box-content">
                             <div class="form-group">
                                 <label class="control-label col-md-2" for="example-input-small">Nombre:</label>
                                 <div class="col-md-3">
-                                    <input type="text" id="nombre_usuario" name="nombre_usuario" maxlength="250" tabindex="1" value="<?php echo $nombre; ?>" class="form-control input-sm"/>
+                                    <input type="text" id="nombre" name="nombre" maxlength="250" tabindex="1" value="<?php echo $nombre; ?>" class="form-control input-sm"/>
                                 </div>
                                 <?php if($mal_nombre==true){ ?>	        
                                 <div class="col-md-7">
@@ -349,8 +400,78 @@ if ($_POST)
                                 </div>
                					<?php } ?>                 
                             </div>
-                     	</div>                              
-                    </form>
+
+                            <div class="form-group form-actions">
+                                <div class="col-md-10 col-md-offset-2">
+                                		<input type="submit" value="Buscar" name="buscar" id="buscar" class="btn btn-default"/>   
+                                </div>
+                            </div>                        	
+                        </div> 
+ 						<table id="example-datatables" class="table table-striped table-bordered table-hover">
+                        
+                        <thead>
+                            <tr>
+                                <th>Id</th>
+                                <th>Nombre</th>
+                                <th>Edición</th>
+                                <th>URL</th>
+                                <th>Precio</th> 
+                                <th>Editar</th> 
+                                <th>Borrar</th>                                
+                            </tr>
+                        </thead>
+                        <tbody>
+						<?php
+                        
+                            while ($fila = mysqli_fetch_array($result))
+                            {
+                        ?>
+                            <tr>
+                                <td id="id"><?php echo $fila['id']; ?></td>
+                                <td><?php echo $fila['card_name']; ?></td>
+                                <td><?php echo $fila['card_edition']; ?></td>
+                                <td><?php echo $fila['card_url']; ?></td>
+                                <td><?php echo $fila['card_price']; ?></td>
+                                <td align="center">
+                                    <a href="formulario-edicion-cartas.php?id=<?php echo $fila['id'];?>&lugar=buscador-cartas">
+                                        <input type="button" value="Editar" />
+                                    </a>
+                                </td>
+                                <td align="center">
+                                    <a href="baja-cartas.php?id_usuario=<?php echo $fila['id'];?>"> 
+                                        <input type="button" value="Borrar"/>
+                                    </a>
+                                </td>
+                            </tr>
+                        <?php } ?>
+                        </tbody>
+                    </table>
+                    </form>                     <div align="center"><?php 
+                    if(($pagina - 1) > 0)
+                    {
+                        echo " <a href='listacotizacion.php?pagina=".($pagina-1)."'>Anterior</a>"; 
+                    }
+                    
+                    for ($i=1;$i<=$total_paginas;$i++)
+                    {
+                        if($pagina == $i)
+                        {
+                            echo "<b> ".$pagina."</b>";
+                        }else{
+                            echo " <a href=listacotizacion.php?pagina=$i>$i</a>";
+                        }
+                    }
+                    
+                    if(($pagina + 1) <= $total_paginas)
+                    {
+                        echo " <a href='listacotizacion.php?pagina=".($pagina+1)."'>Siguiente</a>";
+                    }
+                    ?></div>
+                    
+                    
+                    
+                    </div>                                                                                             
+
                     <!-- END FORMULARIO -->
 
                 </div>
@@ -544,5 +665,15 @@ if ($_POST)
 
         <!-- ckeditor.js, load it only in the page you would like to use CKEditor (it's a heavy plugin to include it with the others!) -->
         <script src="js/ckeditor/ckeditor.js"></script>
+
+        <script>
+            $(function () {
+                /* Initialize Datatables */
+                $('#example-datatables').dataTable({columnDefs: [{orderable: false, targets: [0]}]});
+                $('#example-datatables2').dataTable();
+                $('#example-datatables3').dataTable();
+                $('.dataTables_filter input').attr('placeholder', 'Search');
+            });
+        </script>        
     </body>
 </html>
