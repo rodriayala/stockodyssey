@@ -13,6 +13,7 @@ require('clases/GSUsuario.class.php');
 			$password=trim($_POST['password_usuario']);
 			$id=trim($_POST['id_usuario']);
 			$todo_ok = true;
+			
 	        if (strlen($nombre) == 0) {
 	            $mal_nombre = true;
 	            $todo_ok = false;
@@ -102,14 +103,8 @@ require('clases/GSUsuario.class.php');
 
         <!-- Modernizr (browser feature detection library) & Respond.js (Enable responsive CSS code on browsers that don't support it, eg IE8) -->
         <script src="js/vendor/modernizr-respond.min.js"></script>
-		<script>
-            var updateOK = <?php echo $updateOK; ?>;
-            if(updateOK==true)
-            {
-                alert("Usuario modificado correctamente.");
-                window.location.href = 'abm-usuarios.php';
-            }
-        </script>        
+ 
+        <script src="js/sweetalert2.all.js"></script>      
     </head>
 
     <!-- Add the class .fixed to <body> for a fixed layout on large resolutions (min: 1200px) -->
@@ -380,9 +375,8 @@ require('clases/GSUsuario.class.php');
                 <div id="page-content">
                     <!-- Navigation info -->
                     <ul id="nav-info" class="clearfix">
-                        <li><a href="index.html"><i class="fa fa-home"></i></a></li>
-                        <li><a href="javascript:void(0)">Forms</a></li>
-                        <li class="active"><a href="">Components</a></li>
+                        <li><a href="principal.php"><i class="fa fa-home"></i></a></li>
+                        <li class="active"><a href="principal.php">Menu Principal</a></li>
                     </ul>
                     <!-- END Navigation info -->
 
@@ -440,15 +434,16 @@ require('clases/GSUsuario.class.php');
                                 </div>
                					<?php } ?>                 
                             </div>
-                            
+
+                            <div class="form-group form-actions">
+                                <div class="col-md-10 col-md-offset-2">
+                                    <a href="abm-usuarios.php"><button id="cancel" type="button">VOLVER</button></a>
+                                    <input type="submit" name="modificar" id="modificar" value="modificar">
+                                </div>
+                            </div>   
+                                                    
                         </div>
- 
-                        <div class="form-group form-actions">
-                           	<div class="col-md-10 col-md-offset-2">
-                            	<a href="abm-usuarios.php"><button id="cancel" type="button">VOLVER</button></a>
-                            	<input type="submit" name="modificar" id="modificar" value="modificar">
-                            </div>
-                        </div>                                                   
+                        
                     </form>
                     <!-- END FORMULARIO -->
 
@@ -643,5 +638,23 @@ require('clases/GSUsuario.class.php');
 
         <!-- ckeditor.js, load it only in the page you would like to use CKEditor (it's a heavy plugin to include it with the others!) -->
         <script src="js/ckeditor/ckeditor.js"></script>
+
+		<script type="text/javascript">
+        
+            var updateOK = <?php echo $updateOK; ?>;
+        
+			 if(updateOK==true)
+			 { 
+				 swal({
+				  title: 'Felicitaciones',
+				  text: "Usuario modificado correctamente, presione OK para volver al menu",
+				  type: 'success',
+				}).then((result) => {
+				  if (result.value) {
+					window.location.href = 'abm-usuarios.php';
+				  }
+				})
+			}       		 
+        </script>                  
     </body>
 </html>

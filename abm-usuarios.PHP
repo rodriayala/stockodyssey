@@ -110,26 +110,8 @@ if (!isset($todo_ok)) $todo_ok = 0;
 
         <!-- Modernizr (browser feature detection library) & Respond.js (Enable responsive CSS code on browsers that don't support it, eg IE8) -->
         <script src="js/vendor/modernizr-respond.min.js"></script>
- 
-		<script type="text/javascript">
-            var insertarOK = <?php echo $insertarOK; ?>;
-            
-            if(insertarOK==true)
-            {
-                alert("Usuario ingresado correctamente.");
-                window.location.href = 'abm-usuarios.php';
-    
-            }
-            
-            var deleteOK = <?php echo $deleteOK; ?>;
-    
-            if(deleteOK==true)
-            {
-                alert("Usuario borrado correctamente.");
-                window.location.href = 'abm-usuarios.php';
-            }
-        
-        </script>       
+
+		<script src="js/sweetalert2.all.js"></script>             
     </head>
 
     <!-- Add the class .fixed to <body> for a fixed layout on large resolutions (min: 1200px) -->
@@ -400,9 +382,8 @@ if (!isset($todo_ok)) $todo_ok = 0;
                 <div id="page-content">
                     <!-- Navigation info -->
                     <ul id="nav-info" class="clearfix">
-                        <li><a href="index.html"><i class="fa fa-home"></i></a></li>
-                        <li><a href="javascript:void(0)">Forms</a></li>
-                        <li class="active"><a href="">Components</a></li>
+                        <li><a href="principal.php"><i class="fa fa-home"></i></a></li>
+                        <li class="active"><a href="principal.php">Menu Principal</a></li>
                     </ul>
                     <!-- END Navigation info -->
 
@@ -702,5 +683,24 @@ if (!isset($todo_ok)) $todo_ok = 0;
 
         <!-- ckeditor.js, load it only in the page you would like to use CKEditor (it's a heavy plugin to include it with the others!) -->
         <script src="js/ckeditor/ckeditor.js"></script>
+
+		<script type="text/javascript">
+        
+            var insertarOK = <?php echo $insertarOK; ?>;
+        
+ 			 if(insertarOK==true)
+			 { 
+				 swal({
+				  title: 'Felicitaciones',
+				  text: "Usuario ingresado correctamente, presione OK para volver al menu",
+				  type: 'success',
+				}).then((result) => {
+				  if (result.value) {
+					window.location.href = 'abm-usuarios.php';
+				  }
+				})
+			}       		 
+       		 
+        </script>               
     </body>
 </html>
