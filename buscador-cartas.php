@@ -332,11 +332,93 @@ if ($_POST)
                         <li class="active"><a href="principal.php">Menu Principal</a></li>
                     </ul>
                     <!-- END Navigation info -->
+					<h3 class="page-header page-header-top"><div class="right"><button data-toggle="modal" data-target="#squarespaceModal" class="btn btn-primary center-block">ALTA</button></div>
+</h3>
+                        <!-- line modal -->
+                        <div class="modal fade" id="squarespaceModal" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
+                          <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span><span class="sr-only">Close</span></button>
+                                    <h3 class="modal-title" id="lineModalLabel">Alta Producto</h3>
+                                </div>
+                                <form action="" method="post" name="form1" > 
+                                <div class="modal-body">
+                                    <!-- content goes here -->
+                                                                           
+  									 <div class="form-group">
+                                        <label class="control-label " for="example-input-small">Nombre:</label>
+                                       
+                                            <input type="text" id="card_name" name="card_name" maxlength="250" tabindex="1" value="<?php echo $nombre; ?>" class="form-control input-sm"/>
+                                       
+                                        <?php if($mal_nombre==true){ ?>	        
+                                        
+                                            <span class="help-block"><strong>¡ATENCION!</strong> Este campo tiene que estar completo.</span>
+                                       
+                                        <?php } ?>                 
+                                    </div>
 
+
+                                    <div class="form-group">
+                                        <label class="control-label " for="example-input-small">Edición:</label>
+                                        
+                                            <input type="text" id="card_edition" name="card_edition" maxlength="250" tabindex="1" value="<?php echo $edicion; ?>" class="form-control input-sm"/>
+                                        
+                                        <?php if($mal_edicion==true){ ?>	        
+                                       
+                                            <span class="help-block"><strong>¡ATENCION!</strong> Este campo tiene que estar completo.</span>
+                                       
+                                        <?php } ?>                 
+                                    </div>
+                            
+                                    <div class="form-group">
+                                        <label class="control-label " for="example-input-small">URL:</label>
+                                        
+                                            <input type="text" id="card_url" name="card_url" maxlength="250" tabindex="1" value="<?php echo $url; ?>" class="form-control input-sm"/>
+                                        
+                                        <?php if($mal_url==true){ ?>	        
+                                        
+                                            <span class="help-block"><strong>¡ATENCION!</strong> Este campo tiene que estar completo.</span>
+                                        
+                                        <?php } ?>                 
+                                    </div>
+ 
+                                     <div class="form-group">
+                                        <label class="control-label " for="example-input-small">Precio Carta:</label>
+                                        
+                                            <textarea rows="10" cols="50" id="card_price" name="card_price" class="form-control"><?php echo trim($precio); ?></textarea>
+                                        
+                                        <?php if($mal_precio==true){ ?>	        
+                                        
+                                            <span class="help-block"><strong>¡ATENCION!</strong> Este campo tiene que estar completo.</span>
+                                       
+                                        <?php } ?>                 
+                                    </div>                                    
+                                </div>
+                                <div class="modal-footer">
+                                    <div class="btn-group btn-group-justified" role="group" aria-label="group button">
+                                        <div class="btn-group" role="group">
+                                            <button type="button" class="btn btn-default" data-dismiss="modal"  role="button">Close</button>
+                                        </div>
+                                        <div class="btn-group btn-delete hidden" role="group">
+                                            <button type="button" id="delImage" class="btn btn-default btn-hover-red" data-dismiss="modal"  role="button">CERRAR</button>
+                                        </div>
+                                        <div class="btn-group" role="group">
+                                            <input type="submit" id="BTNALTA" name="BTNALTA" class="btn btn-default btn-hover-green" data-action="save" role="button" value="ALTA">
+                                        </div>
+                                    </div>
+                                </div>
+                                </form>
+                            </div>
+                          </div>
+                        </div>
+                        <!-- fin modal-->     
                     <!-- FORMULARIO -->
                     <form action="" method="post" class="form-horizontal form-box">
                         <h4 class="form-box-header">BUSCADOR DE CARTAS EXISTENTES</h4>
+                        
  						<div class="form-box-content">
+ 						                   
                             <div class="form-group">
                                 <label class="control-label col-md-2" for="example-input-small">Nombre:</label>
                                 <div class="col-md-3">

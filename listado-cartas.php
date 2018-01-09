@@ -1,7 +1,7 @@
 <?php
 require('funciones.php');
-require('clases/abm-cartas.class.php');
 require('clases/GSCarta.class.php');
+require('clases/abm-cartas.class.php');
 
 error_reporting(0);
 if ($_POST)
@@ -11,8 +11,50 @@ if ($_POST)
 		$nombre=trim($_POST['nombre']);
 		$abmcarta=new ABMCarta;
 		$result =$abmcarta->getCartaByNombre($nombre);
-	
 	}
+	
+	if($_POST['BTNALTA'])
+	{//si creo un nuevo 
+		$card_name 		= trim($_POST['card_name']);
+		$card_edition 	= trim($_POST['card_edition']);
+		$card_url 		= trim($_POST['card_url']);
+		$card_price		= trim($_POST['card_price']);
+
+		$todo_ok = true;
+		
+        if (strlen($card_name) == 0) {
+            $mal_card_name = true;
+            $todo_ok = false;
+        }
+
+        if (strlen($card_edition) == 0) {
+            $mal_card_edition = true;
+            $todo_ok = false;
+        }
+		
+        if (strlen($card_url) == 0) {
+            $mal_card_url = true;
+            $todo_ok = false;
+        }
+		
+        if (strlen($card_price) == 0) {
+            $mal_card_price = true;
+            $todo_ok = false;
+        }	
+		
+		if ($todo_ok == true)
+		{
+            $GSCarta = new GSCarta();
+            $GSCarta->setNombre($card_name);
+            $GSCarta->setEdicion($card_edition);
+            $GSCarta->setUrl($card_url);
+            $GSCarta->setPrecio($card_price);
+	
+            $ABMCarta = new ABMCarta();
+            $insertarOK = $ABMCarta->insertarCarta($GSCarta);		
+		}							
+	}
+	
 }else{
 	//$abmcarta=new ABMCarta;
 	//$result =$abmcarta->getAllCartas();
@@ -384,11 +426,93 @@ if ($_POST)
                         <li class="active"><a href="principal.php">Menu Principal</a></li>
                     </ul>
                     <!-- END Navigation info -->
+                    <h3 class="page-header page-header-top"><div class="right"><button data-toggle="modal" data-target="#squarespaceModal" class="btn btn-primary center-block">ALTA</button></div>
+</h3>
+ 					<!-- line modal -->
+                        <div class="modal fade" id="squarespaceModal" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
+                          <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span><span class="sr-only">Close</span></button>
+                                    <h3 class="modal-title" id="lineModalLabel">Alta Producto</h3>
+                                </div>
+                                <form action="" method="post" name="form1" > 
+                                <div class="modal-body">
+                                    <!-- content goes here -->
+                                                                           
+  									 <div class="form-group">
+                                        <label class="control-label " for="example-input-small">Nombre:</label>
+                                       
+                                            <input type="text" id="card_name" name="card_name" maxlength="250" tabindex="1" value="<?php echo $nombre; ?>" class="form-control input-sm"/>
+                                       
+                                        <?php if($mal_card_name == true){ ?>	        
+                                        
+                                            <span class="help-block"><strong>¡ATENCION!</strong> Este campo tiene que estar completo.</span>
+                                       
+                                        <?php } ?>                 
+                                    </div>
 
+
+                                    <div class="form-group">
+                                        <label class="control-label " for="example-input-small">Edición:</label>
+                                        
+                                            <input type="text" id="card_edition" name="card_edition" maxlength="250" tabindex="1" value="<?php echo $edicion; ?>" class="form-control input-sm"/>
+                                        
+                                        <?php if($mal_card_edition ==true){ ?>	        
+                                       
+                                            <span class="help-block"><strong>¡ATENCION!</strong> Este campo tiene que estar completo.</span>
+                                       
+                                        <?php } ?>                 
+                                    </div>
+                            
+                                    <div class="form-group">
+                                        <label class="control-label " for="example-input-small">URL:</label>
+                                        
+                                            <input type="text" id="card_url" name="card_url" maxlength="250" tabindex="1" value="<?php echo $url; ?>" class="form-control input-sm"/>
+                                        
+                                        <?php if($mal_card_url==true){ ?>	        
+                                        
+                                            <span class="help-block"><strong>¡ATENCION!</strong> Este campo tiene que estar completo.</span>
+                                        
+                                        <?php } ?>                 
+                                    </div>
+ 
+                                     <div class="form-group">
+                                        <label class="control-label " for="example-input-small">Precio Carta:</label>
+                                        
+                                            <textarea rows="10" cols="50" id="card_price" name="card_price" class="form-control"><?php echo trim($precio); ?></textarea>
+                                        
+                                        <?php if($mal_card_price==true){ ?>	        
+                                        
+                                            <span class="help-block"><strong>¡ATENCION!</strong> Este campo tiene que estar completo.</span>
+                                       
+                                        <?php } ?>                 
+                                    </div>                                    
+                                </div>
+                                <div class="modal-footer">
+                                    <div class="btn-group btn-group-justified" role="group" aria-label="group button">
+                                        <div class="btn-group" role="group">
+                                            <button type="button" class="btn btn-default" data-dismiss="modal"  role="button">Close</button>
+                                        </div>
+                                        <div class="btn-group btn-delete hidden" role="group">
+                                            <button type="button" id="delImage" class="btn btn-default btn-hover-red" data-dismiss="modal"  role="button">CERRAR</button>
+                                        </div>
+                                        <div class="btn-group" role="group">
+                                            <input type="submit" id="BTNALTA" name="BTNALTA" class="btn btn-default btn-hover-green" data-action="save" role="button" value="ALTA">
+                                        </div>
+                                    </div>
+                                </div>
+                                </form>
+                            </div>
+                          </div>
+                        </div>
+                        <!-- fin modal-->  
                     <!-- FORMULARIO -->
                     <form action="" method="post" class="form-horizontal form-box">
                         <h4 class="form-box-header">LISTADO DE CARTAS EXISTENTES</h4>
+                        
  						<div class="form-box-content">
+                        	                     
                             <div class="form-group">
                                 <label class="control-label col-md-2" for="example-input-small">Nombre:</label>
                                 <div class="col-md-3">
@@ -449,7 +573,7 @@ if ($_POST)
                     </form>                     <div align="center"><?php 
                     if(($pagina - 1) > 0)
                     {
-                        echo " <a href='listacotizacion.php?pagina=".($pagina-1)."'>Anterior</a>"; 
+                        echo " <a href='listado-cartas.php?pagina=".($pagina-1)."'>Anterior</a>"; 
                     }
                     
                     for ($i=1;$i<=$total_paginas;$i++)
@@ -458,13 +582,13 @@ if ($_POST)
                         {
                             echo "<b> ".$pagina."</b>";
                         }else{
-                            echo " <a href=listacotizacion.php?pagina=$i>$i</a>";
+                            echo " <a href=listado-cartas.php?pagina=$i>$i</a>";
                         }
                     }
                     
                     if(($pagina + 1) <= $total_paginas)
                     {
-                        echo " <a href='listacotizacion.php?pagina=".($pagina+1)."'>Siguiente</a>";
+                        echo " <a href='listado-cartas.php?pagina=".($pagina+1)."'>Siguiente</a>";
                     }
                     ?></div>
                     
