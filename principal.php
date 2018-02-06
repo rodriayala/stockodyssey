@@ -448,8 +448,174 @@ if (falta_logueo())
                     </ul>
                     <!-- END Navigation info -->
 
-            
+					<!-- formulario venta-->  
+					<form id="basic-wizard" action="" method="post" class="form-horizontal form-box">
+                        <!-- Form Header -->
+                        <h4 class="form-box-header"><i class="fa fa-magic"></i> Venta</h4>
 
+                        <!-- Form Content -->
+                        <div class="form-box-content">
+
+                            <!-- First Step -->
+                            <div id="first" class="step">
+                                <!-- Step Info -->
+                                <div class="wizard-steps row">
+                                    <div class="col-md-4 text-center active">1. Producto</div>
+                                    <div class="col-md-4 text-center">2. Cliente</div>
+                                </div>
+                                <!-- END Step Info -->                               
+                                
+                                <div class="form-group">
+                                    <label class="control-label col-md-2" for="example-username">Nombre Carta</label>
+                                    <div class="col-md-7">
+                                        <input type="text" id="nombrecarta" name="nombrecarta" class="form-control" autocomplete="off">
+                                        <ol id="displayCarta"></ol>
+                                    </div>
+                                    
+                            	</div>
+                                
+                                <div class="form-group">
+                                    <label class="control-label col-md-2" for="example-username">Edición Carta</label>
+                                    <div class="col-md-7">
+                                        <select id="nombreedicion" name="nombreedicion" class="form-control" onChange="elegiredicion()">
+                                        	<option value="default">Seleccione</option>
+                                    	</select>
+                                    </div>
+                            	</div>
+ 
+                               <div class="form-group">
+                                    <label class="control-label col-md-2" for="example-input-grid1">Precio Venta ($AR)</label>
+                                    <div class="col-md-1">
+                                        <input type="text" id="preciocarta" name="preciocarta" class="form-control">
+                                    </div>
+                               </div>
+                                                           
+                            </div>
+                            <!-- END First Step -->
+
+                            <!-- Second Step -->
+                            <div id="second" class="step">
+                                <!-- Step Info -->
+                                <div class="wizard-steps row">
+                                    <div class="col-md-4 text-center">1. Producto</div>
+                                    <div class="col-md-4 text-center active">2. Cliente</div>
+                                </div>
+
+                            <div class="form-group">
+                                <label class="control-label col-md-2">Producto</label>
+                                <div class="col-md-3">
+                                    <p class="form-control-static"><code id="prodNombre"></code></p>
+                                </div>
+                                <div class="col-md-7">
+                                    <p class="form-control-static"><code id="prodDesc"></code></p>
+                                </div>
+                            </div>
+                            
+						
+                                
+                                <div class="form-group">
+                                    <label class="control-label col-md-2">Nuevo Cliente</label>
+                                    <div class="col-md-10">
+                                        <label class="switch switch-danger"><input type="checkbox" id="chknuevocli"><span></span></label>
+                                    </div>
+                                </div>
+                                
+                                <div id="buscocli">
+                                    <div class="form-group">
+                                        <div id="datoscli">
+                                            <label class="control-label col-md-2" for="example-lastname">Apellido,Nombre Cliente</label>
+                                            <div class="col-md-4">
+                                                <input type="text" id="apeynom" name="apeynom" class="form-control" autocomplete="off">
+                                                
+                                                <ol id="displayApellido"></ol>
+                                                <input type="text" id="idapellido" name="idapellido" style="display:none">
+                                                <br><br>
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>  
+                                                          
+                                <!-- nuevo cli -->
+                                <div id="nuevocli" style="display:none">
+                                <div class="form-group">
+                                    <label class="control-label col-md-2" for="example-firstname">Apellidos Cliente</label>
+                                    <div class="col-md-3">
+                                        <input type="text" id="apellidos" name="apellidos" class="form-control">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label col-md-2" for="example-lastname">Nombre Cliente</label>
+                                    <div class="col-md-3">
+                                        <input type="text" id="nombres" name="nombres" class="form-control">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label col-md-2" for="example-address">Lugar Compra</label>
+                                    <div class="col-md-3">
+                                        <select id="lugarcompra" name="lugarcompra" class="form-control">
+                                          <option value="Facebook">Facebook</option>
+                                          <option value="Mercado Libre">Mercado Libre</option>
+                                          <option value="Carpeta">Carpeta</option>
+                                    </select>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label col-md-2" for="example-city">Estado</label>
+                                    <div class="col-md-3">
+                                        <select id="estadocompra" name="estadocompra" class="form-control">
+                                          <option value="Reservado">Reservado</option>
+                                          <option value="Comprado">Comprado</option>
+                                    </select>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="control-label col-md-2" for="example-city">Cobro</label>
+                                    <div class="col-md-3">
+                                        <select id="cobro" name="cobro" class="form-control">
+                                          <option value="De Palabra">De Palabra</option>
+                                          <option value="Reservado">Reservado</option>
+                                          <option value="Pagado">Págado</option>
+                                    </select>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="control-label col-md-2" for="example-city">Entrega</label>
+                                    <div class="col-md-3">
+                                        <select id="entrega" name="entrega" class="form-control">
+                                          <option value="No">No</option>
+                                          <option value="Si">Si</option>
+                                          <option value="Correo">En el Correo</option>
+                                    </select>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label class="control-label col-md-2" for="example-textarea-large">Comentarios</label>
+                                    <div class="col-md-10">
+                                        <textarea id="comentarios" name="comentarios" class="form-control" rows="10"></textarea>
+                                    </div>
+                            	</div>
+                                                                                            
+                            	</div>
+                                <!-- nuevo cli -->
+                            </div>
+                            
+
+                            <!-- Form Buttons -->
+                            <div class="form-group form-actions">
+                                <div class="col-md-10 col-md-offset-2">
+                                    <input type="reset" class="btn btn-danger" id="Volver" value="Volver">
+                                    <input type="submit" class="btn btn-success" id="Guardar" value="Guardar">
+                                </div>
+                            </div>
+                            <!-- END Form Buttons -->
+                        </div>
+                        <!-- END Form Content -->
+                    </form>            
+					<!-- fin formulario venta -->
                     <!-- Tiles -->
                     <!-- Row 1 -->
                     <div class="dash-tiles row">
@@ -802,10 +968,11 @@ if (falta_logueo())
         <!-- Excanvas for canvas support on IE8 -->
         <!--[if lte IE 8]><script src="js/helpers/excanvas.min.js"></script><![endif]-->
 
-        <!-- Include Jquery library from Google's CDN but if something goes wrong get Jquery from local file (Remove 'http:' if you have SSL) -->
+        <!-- Include Jquery library from Google's CDN but if something goes wrong get Jquery from local file (Remove 'http:' if you have SSL) 
         <script src="js/vendor/jquery-1.11.1.min.js"></script>
-        <script>!window.jQuery && document.write(decodeURI('%3Cscript src="js/vendor/jquery-1.11.1.min.js"%3E%3C/script%3E'));</script>
-
+        <script>!window.jQuery && document.write(decodeURI('%3Cscript src="js/vendor/jquery-1.11.1.min.js"%3E%3C/script%3E'));</script>-->
+		<script src="js/vendor/jquery-2.1.1.min.js"></script>
+       
         <!-- Bootstrap.js -->
         <script src="js/vendor/bootstrap.min.js"></script>
 
@@ -815,7 +982,235 @@ if (falta_logueo())
 
         <!-- Javascript code only for this page -->
         <script>
+
+		function fillCarta(Value)
+		{
+			$('#nombrecarta').val(Value);
+			$('#displayCarta').hide();
+			
+			var nombrecarta = $('#nombrecarta').val();
+			
+			var toLoad= 'consultoedicion.php?nombrecarta=' + nombrecarta;
+			//alert(toLoad);
+			$.post(toLoad,function (responseText){
+		 
+				$('#nombreedicion').html(responseText);
+				$('#nombreedicion').change();
+			});
+			
+			$("#prodNombre").text(nombrecarta);
+		}
+
+
+		function elegiredicion()
+		{
+			//var edicion = document.getElementById("nombreedicion").value;
+			//alert(edicion);
+			//alert('You like ' + event.target.value + ' ice cream.');
+			//$("#prodDesc").text(edicion);
+		}
+
+	
+		function fillApellido(Value,Value2)
+		{
+			$('#apeynom').val(Value);
+			$('#idapellido').val(Value2);
+			$('#displayApellido').hide();
+			
+			var ape = $('#apeynom').val();
+			
+			var toLoad= 'consultoapellido.php?ape=' + ape;
+			//alert(toLoad);
+			$.post(toLoad,function (responseText)
+			{
+				$('#apeynom').html(responseText);
+				$('#apeynom').change();
+				
+				var idapellido = $('#idapellido').val();
+				recargoCliente(idapellido);
+			});
+				
+		}
+		
+		function recargoCliente(idapellido)
+		{
+			var buscocli = document.getElementById("buscocli");
+			//alert (buscocli);
+			var nuevocli = document.getElementById("nuevocli");
+			nuevocli.style.display = "block";
+			buscocli.style.display = "none";
+			
+			var idapellido = $('#idapellido').val();
+			
+			var toLoad= 'consultonuevocliente.php?idapellido=' + idapellido;
+		
+			$.post(toLoad,function (responseText)
+			{
+				$('#nuevocli').html(responseText);
+				$('#nuevocli').change();
+				
+			});			
+		}
+		
             $(function () {
+
+				 $("#chknuevocli").click(function() {  
+						if($("#chknuevocli").is(':checked')) {  
+							//Si se apaga, buscocli on 
+							var buscocli = document.getElementById("buscocli");
+							var nuevocli = document.getElementById("nuevocli");
+							
+							if (buscocli.style.display === "none") {
+								buscocli.style.display = "block";
+								nuevocli.style.display = "none";
+							} else {
+								buscocli.style.display = "none";
+								nuevocli.style.display = "block";
+							}							 
+						}
+						
+						if(!$("#chknuevocli").is(':checked')) {  
+							//Si se apaga, nuevocli on 
+							var buscocli = document.getElementById("buscocli");
+							var nuevocli = document.getElementById("nuevocli");
+							
+							if (nuevocli.style.display === "none") {
+								buscocli.style.display = "none";
+								nuevocli.style.display = "block";
+							} else {
+								buscocli.style.display = "block";
+								nuevocli.style.display = "none";
+							}												 
+						}  
+					}); 
+
+   
+		
+ 				$('input#nombrecarta').keyup( function() {
+					   if( this.value.length > 2 ) 
+					   {
+						   var nombrecarta = $('#nombrecarta').val();
+							$.ajax({
+								type: "POST",
+								url: "consultocarta.php",
+								data: "nombrecarta="+ nombrecarta ,
+								success: function(html){
+									$("#displayCarta").html(html).show();
+								}
+							});
+					   }
+				});		
+
+
+ 				$('input#apeynom').keyup( function() {
+					   if( this.value.length > 2 ) 
+					   {
+						   var ape = $('#apeynom').val();
+						   $.ajax({
+								type: "POST",
+								url: "consultoapellido.php?ape="+ ape,
+								success: function(html){
+									$("#displayApellido").html(html).show();
+								}
+							});
+							
+					   }
+				});	
+
+				 $.validator.addMethod("valueNotEquals", function(value, element, arg){
+				  return arg !== value;
+				 }, "Seleccione un valor.");
+ 
+                /* Initialize Basic Wizard */
+                $('#basic-wizard').formwizard({
+					disableUIStyles: true,
+                    formPluginEnabled: true,
+                    validationEnabled: true,
+                    validationOptions: {
+                        errorClass: 'help-block',
+                        errorElement: 'span',
+                        errorPlacement: function (error, e) {
+                            e.parents('.form-group > div').append(error);
+                        },
+                        highlight: function (e) {
+                            $(e).closest('.form-group').removeClass('has-success has-error').addClass('has-error');
+                            $(e).closest('.help-block').remove();
+                        },
+                        success: function (e) {
+                            // You can use the following if you would like to highlight with green color the input after successful validation!
+                            e.closest('.form-group').removeClass('has-success has-error'); // e.closest('.form-group').removeClass('has-success has-error').addClass('has-success');
+                            e.closest('.help-block').remove();
+                            e.closest('.help-inline').remove();
+                        },
+                        rules: {
+                            nombrecarta : {
+                                required: true,
+                                minlength: 2
+                            },
+							
+                            nombreedicion: {
+                                 valueNotEquals: "default" 
+                            },
+							
+							preciocarta : {
+                                required: true,
+                                minlength: 1
+                            }
+                        },
+                        messages: {
+                            nombrecarta: 'Seleccione el nombre de la carta',
+                            valueNotEquals: "Seleccione un valor",
+							preciocarta : "Ingrese un valor a la carta"
+                        }
+                    },
+                    formOptions: {
+                        success: function (data) {
+                            // On success status returned
+							
+                        },
+                        beforeSubmit: function (data) { 
+							//Envio la info
+                            alert('Form Submitted!');
+							
+							var apellidos 	= $('#apellidos').val();
+							var nombres 	= $('#nombres').val();
+							var comentarios = $('#comentarios').val();
+							var flagone = true;
+	
+							var lugarcompra = $('#lugarcompra').val();
+							var estadocompra = $('#estadocompra').val();
+							var cobro = $('#cobro').val();
+							var entrega = $('#entrega').val();
+							var preciocarta = $('#preciocarta').val();
+							var id_stock = $('#id_stock').val();
+							var flagtwo = true;
+
+
+
+
+
+		
+							var toLoad= 'consultoapellido.php?ape=' + ape;
+							//alert(toLoad);
+							$.post(toLoad,function (responseText)
+							{
+								$('#apeynom').html(responseText);
+								$('#apeynom').change();
+								
+								var idapellido = $('#idapellido').val();
+								recargoCliente(idapellido);
+							});
+							//Fin Envio la info
+                        },
+                        dataType: 'json',
+                        resetForm: true
+                    },
+                    inAnimation: {height: 'show'},
+                    outAnimation: {height: 'hide'}
+                					
+					
+                });
+										
                 // Initialize dash Datatables
                 $('#dash-example-orders').dataTable({
                     columnDefs: [{orderable: false, targets: [0]}],

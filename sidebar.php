@@ -33,7 +33,7 @@
                                         <a href="page_tables.html"><i class="fa fa-archive"></i>Stock Cartas</a>
                                     </li>
                                     <li>
-                                        <a href="page_datatables.html"><i class="fa fa-th"></i>Listado de cartas</a>
+                                        <a href="listado-cartas.php"><i class="fa fa-th"></i>Listado de cartas</a>
                                     </li>
                                     <li>
                                         <a href="page_datatables.html"><i class="fa fa-search-plus"></i>Buscar cartas</a>

@@ -2703,3 +2703,30 @@ only screen and (min-device-pixel-ratio: 1.5) {
     .loader-11 { background-image: url('../img/loading.gifs/loading11@2x.gif'); }
     .loader-12 { background-image: url('../img/loading.gifs/loading12@2x.gif'); }
 }
+
+
+#lidisplay{
+	display: block;
+	padding: 5px 20px;
+	background-color: #E0DEDB;
+	border-bottom: 1px solid #000066;
+	left: 0px;
+}
+
+#displayCarta{
+	position: absolute;
+    z-index: 99999;
+}
+
+#displayApellido{
+	position: absolute;
+    z-index: 99999;
+}
+
+#lidisplayApellido{
+	display: block;
+	padding: 5px 20px;
+	background-color: #E0DEDB;
+	border-bottom: 1px solid #000066;
+	left: 0px;
+}
