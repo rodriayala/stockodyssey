@@ -447,9 +447,12 @@ if (falta_logueo())
                         <li class="active"><a href="principal.php">Menu Principal</a></li>
                     </ul>
                     <!-- END Navigation info -->
-
+					
+                    <div id="mensajeventa" ></div>
+                    
 					<!-- formulario venta-->  
 					<form id="basic-wizard" action="" method="post" class="form-horizontal form-box">
+                    
                         <!-- Form Header -->
                         <h4 class="form-box-header"><i class="fa fa-magic"></i> Venta</h4>
 
@@ -529,6 +532,7 @@ if (falta_logueo())
                                                 
                                                 <ol id="displayApellido"></ol>
                                                 <input type="text" id="idapellido" name="idapellido" style="display:none">
+                                                <input type="text" id="idcliente" name="idcliente" style="display:none" value="0">
                                                 <br><br>
 
                                             </div>
@@ -973,6 +977,7 @@ if (falta_logueo())
         <script>!window.jQuery && document.write(decodeURI('%3Cscript src="js/vendor/jquery-1.11.1.min.js"%3E%3C/script%3E'));</script>-->
 		<script src="js/vendor/jquery-2.1.1.min.js"></script>
        
+        <script src="js/sweetalert2.all.js"></script>
         <!-- Bootstrap.js -->
         <script src="js/vendor/bootstrap.min.js"></script>
 
@@ -1170,37 +1175,54 @@ if (falta_logueo())
                         },
                         beforeSubmit: function (data) { 
 							//Envio la info
-                            alert('Form Submitted!');
+                            //alert('Form Submitted!');
 							
 							var apellidos 	= $('#apellidos').val();
 							var nombres 	= $('#nombres').val();
 							var comentarios = $('#comentarios').val();
-							var flagone = true;
-	
-							var lugarcompra = $('#lugarcompra').val();
-							var estadocompra = $('#estadocompra').val();
-							var cobro = $('#cobro').val();
-							var entrega = $('#entrega').val();
+							
+							
+							var lugarcompra = document.getElementById("lugarcompra");
+							var valorlugarcompra = lugarcompra.options[lugarcompra .selectedIndex].value; 	
+
+							var estadocompra = document.getElementById("estadocompra");
+							var valorestadocompra = estadocompra.options[estadocompra .selectedIndex].value; 
+							
+							var entrega = document.getElementById("entrega");
+							var valorentrega = entrega.options[entrega .selectedIndex].value; 
+							
+							var cobro = document.getElementById("cobro");
+							var valorcobro = cobro.options[cobro .selectedIndex].value; 
+							
+							var nombreedicion = document.getElementById("nombreedicion");
+							var id_stock = nombreedicion.options[nombreedicion .selectedIndex].value;
+							
 							var preciocarta = $('#preciocarta').val();
-							var id_stock = $('#id_stock').val();
-							var flagtwo = true;
-
-
-
-
-
-		
-							var toLoad= 'consultoapellido.php?ape=' + ape;
+							var idcliente = $('#idcliente').val();
+							
+							
+							var toLoad = 'insertocompra.php?apellidos=' + apellidos	+'&nombres=' + nombres
+							+'&comentarios=' + comentarios +'&lugarcompra=' + valorlugarcompra
+							+'&estadocompra=' + valorestadocompra +'&cobro=' + valorcobro
+							+'&entrega=' + valorentrega +'&preciocarta=' + preciocarta
+							+'&id_stock=' + id_stock +'&idcliente=' + idcliente;
+							
 							//alert(toLoad);
 							$.post(toLoad,function (responseText)
 							{
-								$('#apeynom').html(responseText);
-								$('#apeynom').change();
+								//alert(responseText);
+								//$('#mensajeventa').html(responseText);
+								//$('#mensajeventa').change();
+								swal('WOW!!',responseText,'success');
 								
-								var idapellido = $('#idapellido').val();
-								recargoCliente(idapellido);
 							});
+							
+							
+							//Recargo la pagina
+							location.reload();
+														
 							//Fin Envio la info
+							
                         },
                         dataType: 'json',
                         resetForm: true

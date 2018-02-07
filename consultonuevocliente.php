@@ -40,7 +40,7 @@ while ($res = mysqli_fetch_array($r))
              <div class="form-group">
              	<label class="control-label col-md-2" for="example-address">Lugar Compra</label>
                 	<div class="col-md-3">
-                                        <select id="example-select" name="example-select" class="form-control">
+                                        <select id="lugarcompra" name="lugarcompra" class="form-control">
                                           <option value="Facebook">Facebook</option>
                                           <option value="Mercado Libre">Mercado Libre</option>
                                           <option value="Carpeta">Carpeta</option>
@@ -50,7 +50,7 @@ while ($res = mysqli_fetch_array($r))
                                 <div class="form-group">
                                     <label class="control-label col-md-2" for="example-city">Estado</label>
                                     <div class="col-md-3">
-                                        <select id="example-select" name="example-select" class="form-control">
+                                        <select id="estadocompra" name="estadocompra" class="form-control">
                                           <option value="Reservado">Reservado</option>
                                           <option value="Comprado">Comprado</option>
                                     </select>
@@ -60,7 +60,7 @@ while ($res = mysqli_fetch_array($r))
                                 <div class="form-group">
                                     <label class="control-label col-md-2" for="example-city">Cobro</label>
                                     <div class="col-md-3">
-                                        <select id="example-select" name="example-select" class="form-control">
+                                        <select id="cobro" name="cobro" class="form-control">
                                           <option value="De Palabra">De Palabra</option>
                                           <option value="Reservado">Reservado</option>
                                           <option value="Pagado">Págado</option>
@@ -71,7 +71,7 @@ while ($res = mysqli_fetch_array($r))
                                 <div class="form-group">
                                     <label class="control-label col-md-2" for="example-city">Entrega</label>
                                     <div class="col-md-3">
-                                        <select id="example-select" name="example-select" class="form-control">
+                                        <select id="entrega" name="entrega" class="form-control">
                                           <option value="No">No</option>
                                           <option value="Si">Si</option>
                                           <option value="Correo">En el Correo</option>

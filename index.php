@@ -57,7 +57,8 @@ if($_POST)
 				$Xdes_usu = $arr['nombre_usuario'];
 												
 				logueo_in($Xdes_usu);
-																								
+				
+																							
 				header("location:principal.php");
 				exit();	
 			}else{
