@@ -1,5 +1,5 @@
 <?php
-require_once("funciones.php");
+require_once("funciones.inc.php");
 error_reporting(0);
 if (falta_logueo())
 { 
@@ -7,49 +7,56 @@ if (falta_logueo())
 	exit();
 }
 
-$mensaje = " ";
+$acc = trim($_GET['acc']);
+$id  = trim($_GET['id']);
 
-$sqla = "SELECT * FROM `stock_actual` LEFT JOIN cards_scg ON cards_scg.id = stock_actual.id_card order by id_stock DESC ";
-//echo $sqla; // exit();
-$dba  = conectar();
- 
-$ra   = mysqli_query($dba, $sqla);
-
-if($ra == false)
-{
-	mysqli_close($dba);
-    $error = "Error: (" . mysql_errno() . ") " . mysql_error().")";
-}
-    mysqli_close($dba);
+//Muestro lo que voy a modificar o eliminar
+if($acc == "M" || $acc == "E")
+{ 
+	$sqla = "SELECT * FROM `stock_actual` LEFT JOIN cards_scg ON cards_scg.id = stock_actual.id_card where id_stock = '$id' ";
+	#echo $sqla; // exit();
+	$dba  = conecto();
+	 
+	$ra   = mysqli_query($dba, $sqla);
 	
+	if($ra == false)
+	{
+		mysqli_close($dba);
+		$error = "Error: (" . mysql_errno() . ") " . mysql_error().")";
+	}
+		mysqli_close($dba);
+
+ 	while ($arr = mysqli_fetch_array($ra))		
+	{	
+		$descripcion = trim($arr['card_name']);
+	}
+}
+
 if($_POST)
 {//SEGUNDOS POST
 
-	if($_POST['BTNALTA'])
-	{//si creo un nuevo 	
-		$idUsuario 		= trim($_SESSION['id_usuario']);
-		$id_card		= trim($_POST['nombreedicion']);
-		$preciocompra 	= trim($_POST['preciocompra']);
-		$estadocarta	= trim($_POST['estadocarta']);
-		$estadoventa	= trim($_POST['estadoventa']);
-		$fecha_alta     = date('Y-m-d');
-		
+
+	if($_POST['BTNMOD'])
+	{//si es una modificacion
+		$XTXTdescri	 = (trim($_POST['TXTdescri']));
+		$nivel 		 = trim($_POST['nivel']);
+		$id			 = trim($_GET['id']);
 		
 		$todo_ok = true;
 		
-		if(strlen($preciocompra)==0)
+		if(strlen($XTXTdescri)==0)
 		{
-			$mal_preciocompra = true;
+			$mal_TXTdescri 	 = true;
 			$todo_ok = false;
 		}
 		
-		if($todo_ok == true)
+		if($todo_ok==true)
 		{#Si esta todo bien	
 	
-			$sqla =  "INSERT INTO `stock_actual`(id_usuario_carga, `id_card`, `precio_compra`, `estado_carta`, `estado_venta`, fecha_alta) VALUES 
-			('$idUsuario','$id_card','$preciocompra','$estadocarta','$estadoventa', '$fecha_alta')";
+			$sqla = "UPDATE cartasabuscar SET nombre_carta = '".$XTXTdescri."', nivelcarta = '".$nivel."' where id_carta = '$id' ";
 			#echo $sqla;  exit();
-			$dba  = conectar();			 
+			$dba  = conecto();
+			 
 			$ra   = mysqli_query($dba, $sqla);
 			
 			if($ra == false)
@@ -59,13 +66,41 @@ if($_POST)
 			}
 				mysqli_close($dba);		
 			
-			$mensaje = "ALTA";
-			/*echo "<script language='javascript'>
-					 alert('REGISTRO CREADO');
-					window.location.href='alta-stock.php'; </script>";*/
+			
+			echo "<script language='javascript'>
+					 alert('REGISTRO MODIFICADO');
+					window.location.href='abmcartas.php'; </script>";
 		}
-	}//fin creo un nuevo
-}
+	}//Fin si es una modificacion
+
+	if($_POST['BTNELI']){//si ELIMINO
+		
+		$XTXTdescri	= (trim($_POST['TXTdescri']));
+		$id 		= trim($_GET['id']);
+		
+		$Xtodo_ok = true;
+		
+		if($Xtodo_ok==true){#Si esta todo bien	
+			$db  = conecto();
+			$sql = " DELETE FROM cartasabuscar where id_carta = '".$id."' ";	
+				//echo $sql; exit();									
+			$r   = mysqli_query($db, $sql);
+
+				if ($r == false){
+                        mysqli_close($db);
+                        $error = "Error: (" . mysql_errno() . ") " . mysql_error().")";
+                        //gestion_errores();
+                 }
+                        mysqli_close($db);
+		
+				echo "<script language='javascript'>
+					 alert('REGISTRO ELIMINADO');
+					window.location.href='abmcartas.php'; </script>";
+								
+		}#Fin Si esta todo bien			
+	}
+		
+}#Fin segundos post
 ?>
 <!DOCTYPE html>
 <!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
@@ -378,7 +413,7 @@ if($_POST)
                 <!-- Page Content -->
                 <div id="page-content">
                     <!-- Navigation info -->
-                    <ul id="nav-info" class="clearfix">
+    				<ul id="nav-info" class="clearfix">
                         <li><a href="principal.php"><i class="fa fa-home"></i></a></li>
                         <li class="active"><a href="principal.php">Menu Principal</a></li>
                     </ul>
@@ -386,136 +421,58 @@ if($_POST)
 
                     <!-- FORMULARIO -->
                     <form action="" method="post" class="form-horizontal form-box">
-                    <h4 class="form-box-header">STOCK</h4>
- 					
-                    <div class="form-box-content">	
- 						<div class="form-group">
-                        	<label class="control-label col-md-2" for="example-username">Nombre Carta</label>
-                            <div class="col-md-7">
-                            	<input type="text" id="nombrecarta" name="nombrecarta" class="form-control" autocomplete="off">
-                            	<ol id="displayCarta"></ol>
-                        	</div>
-                                    
-                        </div>
-                                
+                        <h4 class="form-box-header"><?php if($acc == "M"){ echo "MODIFICACION"; } if($acc == "E"){ echo "ELIMINACION"; }?>  STOCK CARTAS</h4>
+
+
                         <div class="form-group">
-                        	<label class="control-label col-md-2" for="example-username">Edición Carta</label>
-                            <div class="col-md-7">
-                            	<select id="nombreedicion" name="nombreedicion" class="form-control" onChange="elegiredicion()">
-                                  	<option value="default">Seleccione</option>
-                                </select>
-                           </div>
-                        </div>
-                                                       
-                        <div class="form-group">
-                            <label class="control-label col-md-2" for="val_username">Precio Compra</label>
-                        	<div class="col-md-3">
-                             	<div class="input-group">
-                                        <span class="input-group-addon"><i class="fa fa-money"></i></span>
-                                        <input type="text" id="preciocompra" name="preciocompra" class="form-control">
-                                    </div>
-                                </div>
-                       </div>
-                       
-                       <?php
-					   	if($mal_preciocompra == true)
-						{
-						?>
-                        <div class="form-group">
-                        	<div class="col-md-3">
-                             	<div class="alert alert-danger">
-                                  <strong>CUIDADO!</strong> Falta el precio AMEO.
-                                </div>
+                        	<label class="control-label col-md-2" for="example-input-normal">DESCRIPCION</label>
+                            <div class="col-md-3">
+                            	<input type="text" id="TXTdescri" name="TXTdescri" class="form-control" value="<?php echo $descripcion; ?>" size="100">
                             </div>
-                        </div>
-						<?php
-						}
-					   ?>
-                       <div class="form-group">
-                        	<label class="control-label col-md-2" for="example-username">Estado Carta</label>
+                            
+                            <?php if($mal_TXTdescri==true){ ?>
                             <div class="col-md-7">
-                            	<select id="estadocarta" name="estadocarta" class="form-control" onChange="elegiredicion()">
-                            	  <option value="nmm">NM/M</option>
-                            	  <option value="ex">EX</option>
-                            	  <option value="gd">GD</option>
-                            	  <option value="lp">LP</option>
-                            	  <option value="pl">PL</option>
-                            	  <option value="poor">POOR</option>
-                                </select>
-                           </div>
+                            	<span class="help-block"><code>* - Debe ser correcto</code></span>
+                            </div>
+                            <?php } ?>
                         </div>
-                        
-                      	<div class="form-group">
-                        	<label class="control-label col-md-2" for="example-username">Estado Venta</label>
-                            <div class="col-md-7">
-                            	<select id="estadoventa" name="estadoventa" class="form-control" onChange="elegiredicion()">
-                            	  <option value="DISPONIBLE">DISPONIBLE</option>
-                            	  <option value="RESERVADO">RESERVADO</option>
-                            	  <option value="VENDIDO">VENDIDO</option>
-                                </select>
-                           </div>
-                        </div> 
-                      
-						<div class="form-group form-actions">
+
+
+                        <div class="form-group">
+                        	<label class="control-label col-md-2" for="example-input-normal">Nivel</label>
+                            <div class="col-md-3">
+                           		<select name="nivel" id="nivel" class="form-control select-select2">
+                                  <option value="primaria">primaria</option>
+                                  <option value="secundaria">secundaria</option>
+                                  <option value="terciaria">terciaria</option>
+                                </select></div>
+                            
+                        </div>
+ 	 					<div class="form-group ">
                         	<div class="col-md-10 col-md-offset-2">
-                                    <input type="submit" id="BTNALTA" name="BTNALTA" class="btn btn-success" value="GUARDAR">
-                            </div>
-                        </div> 
-                        </div>                        
+                            	<a href="abmcartas.php"><button formnovalidate type="button" class="btn btn-default">VOLVER AL MENU</button></a>
+                                   
+								<?php
+                                	if($acc == "M")
+                                	{ 
+                                ?>
+                                    <input  name="BTNMOD" type="submit" id="BTNMOD" value=" MODIFICAR " class="btn btn-warning">
+                                <?php			
+                                    } 
+                                    
+                                    if($acc == "E")
+                                    {
+                                ?>	
+                                    <input  name="BTNELI" type="submit" id="BTNELI" value=" ELIMINAR " class="btn btn-danger">
+                                <?php
+                                    }
+                                ?>
+                        	</div>
+                        </div>
+                                                                           
                     </form>
                     <!-- END FORMULARIO -->
-                    
-                    
-                    
 
-					<table id="example-datatables" class="table table-striped table-bordered table-hover">
-                        <thead>
-                            <tr>
-                                <th>Nombre</th>
-                                <th>Edición</th>
-                                <th><i class="fa fa-bolt"></i> Precio compra</th>
-                                <th>Estado Carta</th>
-                              <th class="cell-small">Acción</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                        <?php 
-							while ($arr = mysqli_fetch_array($ra))		
-							{	 
-							
-						?>
-                            <tr>
-                                <td ><a href="javascript:void(0)"><?php $nombre = $arr['card_name']; 
-										if (mb_detect_encoding($nombre, 'utf-8', true) === false)
-										{
-											echo $nombre = mb_convert_encoding($nombre, 'utf-8', 'iso-8859-1');
-										}else{
-											echo $nombre = $arr['card_name'];
-										}
-										?></a></td>
-                                <td><a href="javascript:void(0)"><?php $edicion = $arr['card_edition']; 
-										if (mb_detect_encoding($edicion, 'utf-8', true) === false)
-										{
-											echo $edicion = mb_convert_encoding($edicion, 'utf-8', 'iso-8859-1');
-										}else{
-											echo $edicion = $arr['card_edition'];
-										}
-										?></a></td>
-                                <td><?php echo $precio_compra = trim($arr['precio_compra']); ?></td>
-                                <td><?php echo $estado_carta = trim($arr['estado_carta']); ?></td>
-                                <td class="text-center">
-                                    <div class="btn-group">
-                                    	<a href="mod-stock.php?acc=M&id=<?php echo $arr['id_stock']; ?>" data-toggle="tooltip" title="Modificar" class="btn btn-xs btn-success"><i class="fa fa-pencil"></i></a>
-                                        <a href="mod-stock.php?acc=E&id=<?php echo $arr['id_stock']; ?>" data-toggle="tooltip" title="Borrar" class="btn btn-xs btn-danger"><i class="fa fa-times"></i></a>
-                                    </div>
-                                </td>
-                            </tr>
-                        <?php
-                			}
-              			?>   
-                      </tbody>
-                    </table>
-                    					
                 </div>
                 <!-- END Page Content -->
 
@@ -707,55 +664,5 @@ if($_POST)
 
         <!-- ckeditor.js, load it only in the page you would like to use CKEditor (it's a heavy plugin to include it with the others!) -->
         <script src="js/ckeditor/ckeditor.js"></script>
-        
-        <script src="js/sweetalert2.all.js"></script>
-        <!-- Javascript code only for this page -->
-        <script>
-
-		var mensaje = "<?php echo $mensaje; ?>";
-		
-		if(mensaje=="ALTA")
-		{
-			swal('FELICITACIONES!!','Registro dado de alta','success');	
-		}
-
-		function fillCarta(Value)
-		{ 
-			$('#nombrecarta').val(Value);
-			$('#displayCarta').hide();
-			
-			var nombrecarta = $('#nombrecarta').val();
-			
-			var toLoad= 'consultoedicionparastock.php?nombrecarta=' + nombrecarta;
-			//alert(toLoad);
-			$.post(toLoad,function (responseText){
-		 
-				$('#nombreedicion').html(responseText);
-				$('#nombreedicion').change();
-			});
-			
-			$("#prodNombre").text(nombrecarta);
-		}
-		
-		
-		$(function () {
-			
- 				$('input#nombrecarta').keyup( function() {
-					   if( this.value.length > 2 ) 
-					   {
-						   var nombrecarta = $('#nombrecarta').val();
-							$.ajax({
-								type: "POST",
-								url: "consultocartaaltastock.php",
-								data: "nombrecarta="+ nombrecarta ,
-								success: function(html){
-									$("#displayCarta").html(html).show();
-								}
-							});
-					   }
-				});	
-				
-		});				
-		</script>
     </body>
 </html>
