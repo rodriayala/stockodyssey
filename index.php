@@ -55,8 +55,9 @@ if($_POST)
 			//if(password_verify(trim($_POST['password']), trim($arr['password'])))
 			{	
 				$Xdes_usu = $arr['nombre_usuario'];
-												
-				logueo_in($Xdes_usu);
+				$Xid_usuario = $arr['id_usuario'];
+										
+				logueo_in($Xdes_usu,$Xid_usuario);
 				
 																							
 				header("location:principal.php");

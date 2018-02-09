@@ -5,12 +5,13 @@ $Xnombrecarta	= trim($_GET['nombrecarta']);
 /*$sql = "SELECT * FROM `cards_scg`
 		WHERE LOWER (card_name) like '%$Xnombrecarta%'
 		order by card_edition DESC";*/
-#echo $sql;
+
 $sql = " SELECT `card_name`,`card_edition`,estado_venta, id_stock FROM `cards_scg` 
 INNER JOIN `stock_actual` ON cards_scg.id = stock_actual.id_card 
 WHERE LOWER (card_name) like '%acc%' 
 AND stock_actual.estado_venta LIKE 'DISPONIBLE' 
 order by card_name DESC ";
+echo $sql;
 $db  = conectar();
 $r = mysqli_query($db, $sql);
 	

@@ -1,3 +1,57 @@
+<?php
+require_once("funciones.php");
+error_reporting(0);
+if (falta_logueo())
+{ 
+	header('location:index.php');
+	exit();
+}
+
+if($_POST)
+{//SEGUNDOS POST
+
+	if($_POST['BTNALTA'])
+	{//si creo un nuevo 	
+		$idUsuario 		= trim($_SESSION['id_usuario']);
+		$id_card		= trim($_POST['nombreedicion']);
+		$preciocompra 	= trim($_POST['preciocompra']);
+		$estadocarta	= trim($_POST['estadocarta']);
+		$estadoventa	= trim($_POST['estadoventa']);
+		$fecha_alta     = date('Y-m-d');
+		
+		
+		$todo_ok = true;
+		
+		if(strlen($preciocompra)==0)
+		{
+			$mal_preciocompra = true;
+			$todo_ok = false;
+		}
+		
+		if($todo_ok == true)
+		{#Si esta todo bien	
+	
+			$sqla =  "INSERT INTO `stock_actual`(id_usuario_carga, `id_card`, `precio_compra`, `estado_carta`, `estado_venta`, fecha_alta) VALUES 
+			('$idUsuario','$id_card','$preciocompra','$estadocarta','$estadoventa', '$fecha_alta')";
+			#echo $sqla;  exit();
+			$dba  = conectar();			 
+			$ra   = mysqli_query($dba, $sqla);
+			
+			if($ra == false)
+			{
+				mysqli_close($dba);
+				$error = "Error: (" . mysql_errno() . ") " . mysql_error().")";
+			}
+				mysqli_close($dba);		
+			
+			
+			echo "<script language='javascript'>
+					 alert('REGISTRO CREADO');
+					window.location.href='alta-stock.php'; </script>";
+		}
+	}//fin creo un nuevo
+}
+?>
 <!DOCTYPE html>
 <!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
 <!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
@@ -316,9 +370,10 @@
                     <!-- END Navigation info -->
 
                     <!-- FORMULARIO -->
-                    <form action="page_form_components.html" method="post" class="form-horizontal form-box" onsubmit="return false;">
-                        <h4 class="form-box-header">STOCK</h4>
- 
+                    <form action="" method="post" class="form-horizontal form-box">
+                    <h4 class="form-box-header">STOCK</h4>
+ 					
+                    <div class="form-box-content">	
  						<div class="form-group">
                         	<label class="control-label col-md-2" for="example-username">Nombre Carta</label>
                             <div class="col-md-7">
@@ -341,14 +396,61 @@
                             <label class="control-label col-md-2" for="val_username">Precio Compra</label>
                         	<div class="col-md-3">
                              	<div class="input-group">
-                                        <span class="input-group-addon"><i class="fal fa-money-bill-alt"></i></span>
-                                        <input type="text" id="val_username" name="val_username" class="form-control">
+                                        <span class="input-group-addon"><i class="fa fa-money"></i></span>
+                                        <input type="text" id="preciocompra" name="preciocompra" class="form-control">
                                     </div>
                                 </div>
                        </div>
+                       
+                       <?php
+					   	if($mal_preciocompra == true)
+						{
+						?>
+                        <div class="form-group">
+                        	<div class="col-md-3">
+                             	<div class="alert alert-danger">
+                                  <strong>CUIDADO!</strong> Falta el precio AMEO.
+                                </div>
+                            </div>
+                        </div>
+						<?php
+						}
+					   ?>
+                       <div class="form-group">
+                        	<label class="control-label col-md-2" for="example-username">Estado Carta</label>
+                            <div class="col-md-7">
+                            	<select id="estadocarta" name="estadocarta" class="form-control" onChange="elegiredicion()">
+                            	  <option value="nmm">NM/M</option>
+                            	  <option value="ex">EX</option>
+                            	  <option value="gd">GD</option>
+                            	  <option value="lp">LP</option>
+                            	  <option value="pl">PL</option>
+                            	  <option value="poor">POOR</option>
+                                </select>
+                           </div>
+                        </div>
+                        
+                      	<div class="form-group">
+                        	<label class="control-label col-md-2" for="example-username">Estado Venta</label>
+                            <div class="col-md-7">
+                            	<select id="estadoventa" name="estadoventa" class="form-control" onChange="elegiredicion()">
+                            	  <option value="DISPONIBLE">DISPONIBLE</option>
+                            	  <option value="RESERVADO">RESERVADO</option>
+                            	  <option value="VENDIDO">VENDIDO</option>
+                                </select>
+                           </div>
+                        </div> 
+                      
+						<div class="form-group form-actions">
+                        	<div class="col-md-10 col-md-offset-2">
+                                    <input type="submit" id="BTNALTA" name="BTNALTA" class="btn btn-success" value="GUARDAR">
+                            </div>
+                        </div> 
+                        </div>                        
                     </form>
                     <!-- END FORMULARIO -->
-
+                    
+					
                 </div>
                 <!-- END Page Content -->
 
@@ -540,5 +642,46 @@
 
         <!-- ckeditor.js, load it only in the page you would like to use CKEditor (it's a heavy plugin to include it with the others!) -->
         <script src="js/ckeditor/ckeditor.js"></script>
+                <!-- Javascript code only for this page -->
+        <script>
+
+		function fillCarta(Value)
+		{ 
+			$('#nombrecarta').val(Value);
+			$('#displayCarta').hide();
+			
+			var nombrecarta = $('#nombrecarta').val();
+			
+			var toLoad= 'consultoedicionparastock.php?nombrecarta=' + nombrecarta;
+			//alert(toLoad);
+			$.post(toLoad,function (responseText){
+		 
+				$('#nombreedicion').html(responseText);
+				$('#nombreedicion').change();
+			});
+			
+			$("#prodNombre").text(nombrecarta);
+		}
+		
+		
+		$(function () {
+			
+ 				$('input#nombrecarta').keyup( function() {
+					   if( this.value.length > 2 ) 
+					   {
+						   var nombrecarta = $('#nombrecarta').val();
+							$.ajax({
+								type: "POST",
+								url: "consultocartaaltastock.php",
+								data: "nombrecarta="+ nombrecarta ,
+								success: function(html){
+									$("#displayCarta").html(html).show();
+								}
+							});
+					   }
+				});	
+				
+		});				
+		</script>
     </body>
 </html>

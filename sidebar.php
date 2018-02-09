@@ -30,7 +30,7 @@
                                 <a href="#"><i class="fa fa-money"></i>Ventas de Cartas</a>
                                 <ul>
                                     <li>
-                                        <a href="page_tables.html"><i class="fa fa-archive"></i>Stock Cartas</a>
+                                        <a href="alta-stock.php"><i class="fa fa-archive"></i>Alta Stock Cartas</a>
                                     </li>
                                     <li>
                                         <a href="listado-cartas.php"><i class="fa fa-th"></i>Listado de cartas</a>
