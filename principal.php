@@ -115,7 +115,7 @@ if (falta_logueo())
 	/*-----------------LISTADOS---------------------*/
 	
 
-	/* LISTADO DE PEDIDOS */
+	/* LISTADO DE PEDIDOS
 	$sql_listaPedidos = " SELECT * FROM `stock_actual` LEFT JOIN usuarios ON usuarios.id_usuario = stock_actual.id_usuario_venta LEFT JOIN cards_scg ON cards_scg.id = stock_actual.id_card WHERE `estado_venta` != 'DISPONIBLE' order by `fecha_venta` DESC ";
 	#echo $sql_cantiProdVen; // exit();
 	$db_listaPedidos  = conectar();
@@ -130,6 +130,26 @@ if (falta_logueo())
 		mysqli_close($db_listaPedidos);
 	
 	#echo 'canti:'.$cantiUsers;
+
+
+	/* LISTADO DE VENTAS */
+	$sql_listaVentas = " SELECT `id_accion_stock`, card_name, card_edition, precio_accion, estado_accion, fecha_accion FROM `accion_stock` 
+LEFT JOIN stock_actual ON accion_stock.id_stock = stock_actual.id_stock
+LEFT JOIN cards_scg ON stock_actual.id_card = cards_scg.id
+ORDER BY `id_accion_stock`  DESC";
+	#echo $sql_cantiProdVen; // exit();
+	$db_listaVentas  = conectar();
+	 
+	$r_listaVentas   = mysqli_query($db_listaVentas, $sql_listaVentas);
+	
+	if($r_listaVentas == false)
+	{
+		mysqli_close($db_listaVentas);
+		$error = "Error: (" . mysqli_errno() . ") " . mysqli_error().")";
+	}
+		mysqli_close($db_listaVentas);
+	
+
 	/*FIN LISTADO DE PEDIDOS */		
 ?>
 <!DOCTYPE html>
@@ -480,9 +500,11 @@ if (falta_logueo())
                                 <div class="form-group">
                                     <label class="control-label col-md-2" for="example-username">Edición Carta</label>
                                     <div class="col-md-7">
-                                        <select id="nombreedicion" name="nombreedicion" class="form-control" onChange="elegiredicion()">
+                                    	<input type="text" id="nombreedicion" name="nombreedicion" class="form-control" autocomplete="off" readonly>
+                                        <!--<select id="nombreedicion" name="nombreedicion" class="form-control" onChange="elegiredicion()">
                                         	<option value="default">Seleccione</option>
-                                    	</select>
+                                    	</select>-->
+                                        <input name="idcartaventa" type="text" value="" id="idcartaventa" style="display:none;">
                                     </div>
                             	</div>
  
@@ -618,8 +640,50 @@ if (falta_logueo())
                             <!-- END Form Buttons -->
                         </div>
                         <!-- END Form Content -->
-                    </form>            
+                    </form>           
 					<!-- fin formulario venta -->
+                   <form action="" method="post" class="form-horizontal form-box"> 
+					<h4 class="form-box-header">ULTIMAS VENTAS</h4>
+ 						<table id="example-datatables" class="table table-striped table-bordered table-hover">
+                        
+                        <thead>
+                            <tr>
+                                <th>Nombre</th>
+                                <th>Edición</th>
+                                <th>Fecha Venta</th>
+                                <th>Precio</th> 
+                                <th>Estado Venta</th>
+                                <th>Editar</th> 
+                                <th>Borrar</th>                                
+                            </tr>
+                        </thead>
+                        <tbody>
+						<?php
+                        
+                            while ($fila = mysqli_fetch_array($r_listaVentas))
+                            {
+                        ?>
+                            <tr>
+                                <td><?php echo $fila['card_name']; ?></td>
+                                <td><?php echo $fila['card_edition']; ?></td>
+                                <td><?php echo date("d-m-Y H:i:s", strtotime($fila['fecha_accion'])); ?></td>
+                                <td><?php echo $fila['precio_accion']; ?></td>
+                                <td><?php echo $fila['estado_accion']; ?></td>
+                                <td align="center">
+                                    <a href="formulario-edicion-ventas.php?id=<?php echo $fila['id_accion_stock'];?>&lugar=listado-cartas">
+                                        <input type="button" value="Editar" />
+                                    </a>
+                                </td>
+                                <td align="center">
+                                    <a href="baja-ventas.php?id=<?php echo $fila['id_accion_stock'];?>&lugar=listado-cartas"> 
+                                        <input type="button" value="Borrar"/>
+                                    </a>
+                                </td>
+                            </tr>
+                        <?php } ?>
+                        </tbody>
+                    </table>
+                     </form>                   
                     <!-- Tiles -->
                     <!-- Row 1 -->
                     <div class="dash-tiles row">
@@ -677,6 +741,7 @@ if (falta_logueo())
                         </div>
                         <!-- END Column 2 of Row 1 -->
 
+                    
                         <!-- Column 3 of Row 1 -->
                         <div class="col-sm-3">
                          <!-- Total Downloads Tile -->
@@ -721,77 +786,7 @@ if (falta_logueo())
 
                     <!-- Row 3 -->
                     <div class="row">
-                        <!-- Column 1 of Row 3 -->
-                        <div class="col-sm-6">
-                            <!-- Datatables Tile -->
-                            <div class="dash-tile dash-tile-2x">
-                                <div class="dash-tile-header">
-                                    <div class="dash-tile-options">
-                                        <a href="javascript:void(0)" class="btn btn-default" data-toggle="tooltip" title="Manage Orders"><i class="fa fa-cogs"></i></a>
-                                    </div>
-                                    <i class="fa fa-shopping-cart"></i> Nuevos Pedidos
-                                </div>
-                                <div class="dash-tile-content">
-                                    <div class="dash-tile-content-inner-fluid">
-                                        <table id="dash-example-orders" class="table table-striped table-bordered table-condensed">
-                                            <thead>
-                                                <tr>
-                                                    <th class="hidden-xs hidden-sm hidden-md">#</th>
-                                                     <th><i class="fa fa-shopping-cart"></i> Número</th>
-                                                    <th><i class="fa fa-shopping-cart"></i> Producto</th>                                                   
-                                                    <th class="hidden-xs hidden-sm hidden-md"><i class="fa fa-user"></i> Usuario Venta</th>
-                                                    <th><i class="fa fa-bolt"></i> Status</th>
-                                                    <th class="cell-small"></th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-											<?php 
-												$i=0;
-                                            	while ($arr_listaPedidos = mysqli_fetch_array($r_listaPedidos))		
-                                                {	 
-                                            ?>       
-                                                <tr>
-                                                    <td class="hidden-xs hidden-sm hidden-md"><?php echo $i; ?></td>
-                                                    <td><a href="javascript:void(0)"><?php echo trim($arr_listaPedidos['id_stock']); ?></a></td>
-                                                    <td><a href="javascript:void(0)"><?php echo trim($arr_listaPedidos['card_name']); ?></a></td>
-                                                    <td class="hidden-xs hidden-sm hidden-md"><a href="javascript:void(0)"><?php echo trim($arr_listaPedidos['nombre_usuario']); ?></a></td>
-                                                    <td><?php
-                                                    		if(trim($arr_listaPedidos['estado_venta'])=="RESERVADO") 
-															{
-														?>
-															<span class="label label-warning">RESERVADO</span>
-                                                        <?php
-															}
-														 ?> 
-                                                    	<?php
-                                                    		if(trim($arr_listaPedidos['estado_venta'])=="VENDIDO") 
-															{
-														?>
-															<span class="label label-danger">VENDIDO</span></td>
-                                                        <?php
-															}
-														 ?>    
-                                                    </td>              
-                                                    <td class="text-center">
-                                                        <div class="btn-group">
-                                                            <a href="javascript:void(0)" data-toggle="tooltip" title="Process" class="btn btn-xs btn-primary"><i class="fa fa-book"></i></a>
-                                                            <a href="javascript:void(0)" data-toggle="tooltip" title="Cancel" class="btn btn-xs btn-danger"><i class="fa fa-times"></i></a>
-                                                        </div>
-                                                    </td>
-                                                </tr>
-                                             <?php
-											 	$i++;
-												}
-											 ?>   
-                                               
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </div>
-                            </div>
-                            <!-- END Datatables Tile -->
-                        </div>
-                    </div>
+                    <!-- Column 1 of Row 3 --></div>
                     <!-- END Row 3 -->
                     <!-- END Tiles -->
                 </div>
@@ -988,20 +983,22 @@ if (falta_logueo())
         <!-- Javascript code only for this page -->
         <script>
 
-		function fillCarta(Value)
+		function fillCarta(Value,Value2,Value3)
 		{
 			$('#nombrecarta').val(Value);
 			$('#displayCarta').hide();
 			
 			var nombrecarta = $('#nombrecarta').val();
 			
-			var toLoad= 'consultoedicion.php?nombrecarta=' + nombrecarta;
+			$('#nombreedicion').val(Value2);
+			$('#idcartaventa').val(Value3);
+			/*var toLoad= 'consultoedicion.php?nombrecarta=' + nombrecarta;
 			//alert(toLoad);
 			$.post(toLoad,function (responseText){
 		 
 				$('#nombreedicion').html(responseText);
 				$('#nombreedicion').change();
-			});
+			});*/
 			
 			$("#prodNombre").text(nombrecarta);
 		}
@@ -1194,8 +1191,10 @@ if (falta_logueo())
 							var cobro = document.getElementById("cobro");
 							var valorcobro = cobro.options[cobro .selectedIndex].value; 
 							
-							var nombreedicion = document.getElementById("nombreedicion");
-							var id_stock = nombreedicion.options[nombreedicion .selectedIndex].value;
+							//var nombreedicion = document.getElementById("nombreedicion");
+							//var id_stock = nombreedicion.options[nombreedicion .selectedIndex].value;
+							
+							var id_stock = $('#idcartaventa').val();
 							
 							var preciocarta = $('#preciocarta').val();
 							var idcliente = $('#idcliente').val();
@@ -1233,135 +1232,7 @@ if (falta_logueo())
 					
                 });
 										
-                // Initialize dash Datatables
-                $('#dash-example-orders').dataTable({
-                    columnDefs: [{orderable: false, targets: [0]}],
-                    pageLength: 6,
-                    lengthMenu: [[6, 10, 30, -1], [6, 10, 30, "All"]]
-                });
-                $('.dataTables_filter input').attr('placeholder', 'Search');
-
-                // Dash example stats
-                var dashChart = $('#dash-example-stats');
-
-                var dashChartData1 = [
-                    [0, 200],
-                    [1, 250],
-                    [2, 360],
-                    [3, 584],
-                    [4, 1250],
-                    [5, 1100],
-                    [6, 1500],
-                    [7, 1521],
-                    [8, 1600],
-                    [9, 1658],
-                    [10, 1623],
-                    [11, 1900],
-                    [12, 2100],
-                    [13, 1700],
-                    [14, 1620],
-                    [15, 1820],
-                    [16, 1950],
-                    [17, 2220],
-                    [18, 1951],
-                    [19, 2152],
-                    [20, 2300],
-                    [21, 2325],
-                    [22, 2200],
-                    [23, 2156],
-                    [24, 2350],
-                    [25, 2420],
-                    [26, 2480],
-                    [27, 2320],
-                    [28, 2380],
-                    [29, 2520],
-                    [30, 2590]
-                ];
-                var dashChartData2 = [
-                    [0, 50],
-                    [1, 180],
-                    [2, 200],
-                    [3, 350],
-                    [4, 700],
-                    [5, 650],
-                    [6, 700],
-                    [7, 780],
-                    [8, 820],
-                    [9, 880],
-                    [10, 1200],
-                    [11, 1250],
-                    [12, 1500],
-                    [13, 1195],
-                    [14, 1300],
-                    [15, 1350],
-                    [16, 1460],
-                    [17, 1680],
-                    [18, 1368],
-                    [19, 1589],
-                    [20, 1780],
-                    [21, 2100],
-                    [22, 1962],
-                    [23, 1952],
-                    [24, 2110],
-                    [25, 2260],
-                    [26, 2298],
-                    [27, 1985],
-                    [28, 2252],
-                    [29, 2300],
-                    [30, 2450]
-                ];
-
-                // Initialize Chart
-                $.plot(dashChart, [
-                    {data: dashChartData1, lines: {show: true, fill: true, fillColor: {colors: [{opacity: 0.05}, {opacity: 0.05}]}}, points: {show: true}, label: 'All Visits'},
-                    {data: dashChartData2, lines: {show: true, fill: true, fillColor: {colors: [{opacity: 0.05}, {opacity: 0.05}]}}, points: {show: true}, label: 'Unique Visits'}],
-                    {
-                        legend: {
-                            position: 'nw',
-                            backgroundColor: '#f6f6f6',
-                            backgroundOpacity: 0.8
-                        },
-                        colors: ['#555555', '#db4a39'],
-                        grid: {
-                            borderColor: '#cccccc',
-                            color: '#999999',
-                            labelMargin: 5,
-                            hoverable: true,
-                            clickable: true
-                        },
-                        yaxis: {
-                            ticks: 5
-                        },
-                        xaxis: {
-                            tickSize: 2
-                        }
-                    }
-                );
-
-                // Create and bind tooltip
-                var previousPoint = null;
-                dashChart.bind("plothover", function (event, pos, item) {
-
-                    if (item) {
-                        if (previousPoint !== item.dataIndex) {
-                            previousPoint = item.dataIndex;
-
-                            $("#tooltip").remove();
-                            var x = item.datapoint[0],
-                                y = item.datapoint[1];
-
-                            $('<div id="tooltip" class="chart-tooltip"><strong>' + y + '</strong> visits</div>')
-                                .css({top: item.pageY - 30, left: item.pageX + 5})
-                                .appendTo("body")
-                                .show();
-                        }
-                    }
-                    else {
-                        $("#tooltip").remove();
-                        previousPoint = null;
-                    }
-                });
-            });
+ 		});
         </script>
     </body>
 </html>

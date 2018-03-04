@@ -1,5 +1,5 @@
 <?php
-require_once("funciones.inc.php");
+require_once("funciones.php");
 error_reporting(0);
 if (falta_logueo())
 { 
@@ -7,29 +7,46 @@ if (falta_logueo())
 	exit();
 }
 
-$acc = trim($_GET['acc']);
-$id  = trim($_GET['id']);
+$acc 		= trim($_GET['acc']);
+$id_stock  	= trim($_GET['id']);
+$mensaje 	= "";
 
 //Muestro lo que voy a modificar o eliminar
 if($acc == "M" || $acc == "E")
 { 
-	$sqla = "SELECT * FROM `stock_actual` LEFT JOIN cards_scg ON cards_scg.id = stock_actual.id_card where id_stock = '$id' ";
+	$sqla = "SELECT * FROM `stock_actual` LEFT JOIN cards_scg ON cards_scg.id = stock_actual.id_card where id_stock = '$id_stock' ";
 	#echo $sqla; // exit();
-	$dba  = conecto();
-	 
+	$dba  = conectar();			 
 	$ra   = mysqli_query($dba, $sqla);
-	
+			
 	if($ra == false)
 	{
 		mysqli_close($dba);
 		$error = "Error: (" . mysql_errno() . ") " . mysql_error().")";
 	}
-		mysqli_close($dba);
+		mysqli_close($dba);	
 
  	while ($arr = mysqli_fetch_array($ra))		
 	{	
-		$descripcion = trim($arr['card_name']);
+		$card_name		= trim($arr['card_name']);
+		$card_edition  	= trim($arr['card_edition']);
+		$id_card	  	= trim($arr['id_card']);
+		$preciocompra 	= trim($arr['precio_compra']);
+		$estadocarta  	= trim($arr['estado_carta']);
+		$estadoventa  	= trim($arr['estado_venta']);
 	}
+
+	$sqlb = " SELECT `card_edition`,id FROM `cards_scg` WHERE card_name like '%$card_name%' ";
+	#echo $sqlb; // exit();
+	$dbb  = conectar();			 
+	$rb   = mysqli_query($dbb, $sqlb);
+			
+	if($rb == false)
+	{
+		mysqli_close($dbb);
+		$error = "Error: (" . mysql_errno() . ") " . mysql_error().")";
+	}
+		mysqli_close($dbb);		
 }
 
 if($_POST)
@@ -38,22 +55,26 @@ if($_POST)
 
 	if($_POST['BTNMOD'])
 	{//si es una modificacion
-		$XTXTdescri	 = (trim($_POST['TXTdescri']));
-		$nivel 		 = trim($_POST['nivel']);
-		$id			 = trim($_GET['id']);
+		$idUsuario 		= trim($_SESSION['id_usuario']);
+		$id_card		= trim($_POST['nombreedicion']);//OJO ACA VA EL ID NUEVO DE LA CARTA..
+		$preciocompra 	= trim($_POST['preciocompra']);
+		$estadocarta	= trim($_POST['estadocarta']);
+		$estadoventa	= trim($_POST['estadoventa']);
+
+		$id			 = trim($_GET['id']); //id del stock! oko
 		
 		$todo_ok = true;
 		
-		if(strlen($XTXTdescri)==0)
+		if(strlen($preciocompra)==0)
 		{
-			$mal_TXTdescri 	 = true;
+			$mal_preciocompra 	 = true;
 			$todo_ok = false;
 		}
 		
 		if($todo_ok==true)
 		{#Si esta todo bien	
 	
-			$sqla = "UPDATE cartasabuscar SET nombre_carta = '".$XTXTdescri."', nivelcarta = '".$nivel."' where id_carta = '$id' ";
+			$sqla = "UPDATE stock_actual SET id_card = '".$id_card."', precio_compra = '".$preciocompra."', estado_carta = '".$estadocarta."', estado_venta = '".$estadoventa."'	 where id_stock = '$id' ";
 			#echo $sqla;  exit();
 			$dba  = conecto();
 			 
@@ -67,22 +88,19 @@ if($_POST)
 				mysqli_close($dba);		
 			
 			
-			echo "<script language='javascript'>
-					 alert('REGISTRO MODIFICADO');
-					window.location.href='abmcartas.php'; </script>";
+			$mensaje = "MODIFICADO";		
 		}
 	}//Fin si es una modificacion
 
 	if($_POST['BTNELI']){//si ELIMINO
 		
-		$XTXTdescri	= (trim($_POST['TXTdescri']));
-		$id 		= trim($_GET['id']);
+		$id = trim($_GET['id']);
 		
 		$Xtodo_ok = true;
 		
 		if($Xtodo_ok==true){#Si esta todo bien	
 			$db  = conecto();
-			$sql = " DELETE FROM cartasabuscar where id_carta = '".$id."' ";	
+			$sql = " DELETE FROM stock_actual where id_stock = '".$id."' ";	
 				//echo $sql; exit();									
 			$r   = mysqli_query($db, $sql);
 
@@ -93,9 +111,7 @@ if($_POST)
                  }
                         mysqli_close($db);
 		
-				echo "<script language='javascript'>
-					 alert('REGISTRO ELIMINADO');
-					window.location.href='abmcartas.php'; </script>";
+				$mensaje = "ELIMINADO";				
 								
 		}#Fin Si esta todo bien			
 	}
@@ -423,34 +439,85 @@ if($_POST)
                     <form action="" method="post" class="form-horizontal form-box">
                         <h4 class="form-box-header"><?php if($acc == "M"){ echo "MODIFICACION"; } if($acc == "E"){ echo "ELIMINACION"; }?>  STOCK CARTAS</h4>
 
-
-                        <div class="form-group">
-                        	<label class="control-label col-md-2" for="example-input-normal">DESCRIPCION</label>
-                            <div class="col-md-3">
-                            	<input type="text" id="TXTdescri" name="TXTdescri" class="form-control" value="<?php echo $descripcion; ?>" size="100">
-                            </div>
-                            
-                            <?php if($mal_TXTdescri==true){ ?>
+						<input type="text" id="id" name="id" class="form-control"  style="display:none;" value="<?php echo $id; ?>">
+ 						<div class="form-group">
+                        	<label class="control-label col-md-2" for="example-username">Nombre Carta</label>
                             <div class="col-md-7">
-                            	<span class="help-block"><code>* - Debe ser correcto</code></span>
-                            </div>
-                            <?php } ?>
+                            	<input type="text" id="nombrecarta" name="nombrecarta" class="form-control" autocomplete="off" value="<?php echo $card_name;?>">
+                            	<ol id="displayCarta"></ol>
+                        	</div>
+                                    
                         </div>
-
-
+                                
                         <div class="form-group">
-                        	<label class="control-label col-md-2" for="example-input-normal">Nivel</label>
-                            <div class="col-md-3">
-                           		<select name="nivel" id="nivel" class="form-control select-select2">
-                                  <option value="primaria">primaria</option>
-                                  <option value="secundaria">secundaria</option>
-                                  <option value="terciaria">terciaria</option>
-                                </select></div>
-                            
+                        	<label class="control-label col-md-2" for="example-username">Edición Carta</label>
+                            <div class="col-md-7">
+                            	<select id="nombreedicion" name="nombreedicion" class="form-control" onChange="elegiredicion()">
+                                <?php 
+								 	while ($arrb = mysqli_fetch_array($rb))		
+									{
+								?>
+                                  	<option value="<?php echo trim($arrb['id']);?>"><?php echo trim($arrb['card_edition']); ?></option>
+                                 <?php 
+									}
+								?>    
+                                </select>
+                           </div>
                         </div>
+                                                       
+                        <div class="form-group">
+                            <label class="control-label col-md-2" for="val_username">Precio Compra</label>
+                        	<div class="col-md-3">
+                             	<div class="input-group">
+                                        <span class="input-group-addon"><i class="fa fa-money"></i></span>
+                                        <input type="text" id="preciocompra" name="preciocompra" class="form-control" value="<?php echo $preciocompra; ?>">
+                                    </div>
+                                </div>
+                       </div>
+                       
+                       <?php
+					   	if($mal_preciocompra == true)
+						{
+						?>
+                        <div class="form-group">
+                        	<div class="col-md-3">
+                             	<div class="alert alert-danger">
+                                  <strong>CUIDADO!</strong> Falta el precio AMEO.
+                                </div>
+                            </div>
+                        </div>
+						<?php
+						}
+					   ?>
+                       <div class="form-group">
+                        	<label class="control-label col-md-2" for="example-username">Estado Carta</label>
+                            <div class="col-md-7">
+                            	<select id="estadocarta" name="estadocarta" class="form-control" onChange="elegiredicion()">
+                            	  <option value="nmm" <?php if($estadocarta=="nmm"){ echo "selected";}?> >NM/M</option>
+                            	  <option value="ex" <?php if($estadocarta=="ex"){ echo "selected";}?> >EX</option>
+                            	  <option value="gd" <?php if($estadocarta=="gd"){ echo "selected";}?> >GD</option>
+                            	  <option value="lp" <?php if($estadocarta=="lp"){ echo "selected";}?> >LP</option>
+                            	  <option value="pl" <?php if($estadocarta=="pl"){ echo "selected";}?> >PL</option>
+                            	  <option value="poor" <?php if($estadocarta=="poor"){ echo "selected";}?> >POOR</option>
+                                </select>
+                           </div>
+                        </div>
+                        
+                      	<div class="form-group">
+                        	<label class="control-label col-md-2" for="example-username">Estado Venta</label>
+                            <div class="col-md-7">
+                            	<select id="estadoventa" name="estadoventa" class="form-control" onChange="elegiredicion()">
+                            	  <option value="DISPONIBLE" <?php if($estadoventa=="DISPONIBLE"){ echo "selected";}?>>DISPONIBLE</option>
+                            	  <option value="RESERVADO" <?php if($estadoventa=="RESERVADO"){ echo "selected";}?>>RESERVADO</option>
+                            	  <option value="VENDIDO" <?php if($estadoventa=="VENDIDO"){ echo "selected";}?>>VENDIDO</option>
+                                </select>
+                           </div>
+                        </div> 
+                        
+                        
  	 					<div class="form-group ">
                         	<div class="col-md-10 col-md-offset-2">
-                            	<a href="abmcartas.php"><button formnovalidate type="button" class="btn btn-default">VOLVER AL MENU</button></a>
+                            	<a href="alta-stock.php"><button formnovalidate type="button" class="btn btn-default">VOLVER AL MENU</button></a>
                                    
 								<?php
                                 	if($acc == "M")
@@ -664,5 +731,75 @@ if($_POST)
 
         <!-- ckeditor.js, load it only in the page you would like to use CKEditor (it's a heavy plugin to include it with the others!) -->
         <script src="js/ckeditor/ckeditor.js"></script>
+        <script src="js/sweetalert2.all.js"></script>
+        <script>
+
+		var mensaje = "<?php echo $mensaje; ?>";
+		
+		if(mensaje=="MODIFICADO")
+		{
+			swal('FELICITACIONES!!','Registro Modificado','success');	
+		}
+
+		if(mensaje=="ELIMINADO")
+		{
+			swal('FELICITACIONES!!','Registro Eliminado','success');	
+		}		
+
+
+		function fillCarta(Value)
+		{ 
+			$('#nombrecarta').val(Value);
+			$('#displayCarta').hide();
+			
+			var nombrecarta = $('#nombrecarta').val();
+			
+			var toLoad= 'consultoedicionparastock.php?nombrecarta=' + nombrecarta;
+			//alert(toLoad);
+			$.post(toLoad,function (responseText){
+		 
+				$('#nombreedicion').html(responseText);
+				$('#nombreedicion').change();
+			});
+			
+			$("#prodNombre").text(nombrecarta);
+		}
+		
+		
+		$(function () {//Ready
+
+			var typingTimer; 
+			var doneTypingInterval = 500;  //time in ms, 5 second for example
+			var $input = $('#nombrecarta');
+			
+			$input.on('keyup', function () {
+			  clearTimeout(typingTimer);
+			  typingTimer = setTimeout(doneTyping, doneTypingInterval);
+			});
+			
+			$input.on('keydown', function () {
+			  clearTimeout(typingTimer);
+			});
+			
+			function doneTyping () {
+
+				var nombrecarta = $('#nombrecarta').val();
+				
+				if( nombrecarta.length > 2 )  
+				{ 
+					var nombrecarta = $('#nombrecarta').val();
+					$.ajax({
+						type: "POST",
+						url: "consultocartaaltastock.php",
+						data: "nombrecarta="+ nombrecarta ,
+						success: function(html){
+							$("#displayCarta").html(html).show();
+						}
+					});
+				 }	 			  
+			}
+								
+		});				
+		</script>        
     </body>
 </html>

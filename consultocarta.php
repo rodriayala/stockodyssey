@@ -9,7 +9,7 @@ $Xnombrecarta	= trim($_POST['nombrecarta']);
 		order by card_name DESC";*/
 //echo $sql;
 
-$sql = " SELECT `card_name`,`card_edition`,estado_venta FROM `cards_scg` 
+$sql = " SELECT id_stock,`card_name`,`card_edition`,estado_venta FROM `cards_scg` 
 INNER JOIN `stock_actual` ON cards_scg.id = stock_actual.id_card 
 WHERE LOWER (card_name) like '%$Xnombrecarta%' 
 AND stock_actual.estado_venta LIKE 'DISPONIBLE' 
@@ -28,9 +28,10 @@ if($r == false)
 
 while ($res = mysqli_fetch_array($r))
 {
-	$Xcard_name	= trim($res['card_name']);
+	$Xcard_name		= trim($res['card_name']);
 	$Xcard_edition	= trim($res['card_edition']);
-	echo "<li id='lidisplay' onclick=\"fillCarta('$Xcard_name')\" >$Xcard_name</li>";
+	$Xid_stock		= trim($res['id_stock']);
+	echo "<li id='lidisplay' onclick=\"fillCarta('$Xcard_name','$Xcard_edition','$Xid_stock')\" >$Xcard_name - ( $Xcard_edition )</li>";
 }
 #style='position: absolute; left: 75px; top: 35px; z-index: 9999;'
 

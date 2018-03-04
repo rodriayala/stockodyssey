@@ -4,11 +4,12 @@ include_once("funciones.php");
 
 $Xnombrecarta	= trim($_POST['nombrecarta']);
 
-$sql = "SELECT * FROM `cards_scg`
+$sql = "SELECT `card_name` FROM `cards_scg`
 		WHERE LOWER (card_name) like '%$Xnombrecarta%'
+        GROUP BY `card_name`
 		order by card_name DESC";
-//echo $sql;
-//$sql = "SELECT * FROM cards_scg WHERE LOWER (card_name) like '%". strtolower($nombre)."%'";
+
+#echo $sql;
 
 $db = conectar();
 $r = mysqli_query($db, $sql);
@@ -23,7 +24,7 @@ if($r == false)
 while ($res = mysqli_fetch_array($r))
 {
 	$Xcard_name	= trim($res['card_name']);
-	$Xcard_edition	= trim($res['id']);
+	//$Xcard_edition	= trim($res['id']);
 	echo "<li id='lidisplay' onclick=\"fillCarta('$Xcard_name')\" >$Xcard_name</li>";
 }
 #style='position: absolute; left: 75px; top: 35px; z-index: 9999;'

@@ -1,5 +1,6 @@
 <?php
 require_once("funciones.php");
+require_once("clases/ventas.class.php");
 error_reporting(0);
 if (falta_logueo())
 { 
@@ -9,8 +10,8 @@ if (falta_logueo())
 
 $mensaje = " ";
 
-$sqla = "SELECT * FROM `stock_actual` LEFT JOIN cards_scg ON cards_scg.id = stock_actual.id_card order by id_stock DESC ";
-//echo $sqla; // exit();
+$sqla = "SELECT * FROM `stock_actual` LEFT JOIN cards_scg ON cards_scg.id = stock_actual.id_card order by id_stock DESC LIMIT 30 ";
+#echo $sqla; // exit();
 $dba  = conectar();
  
 $ra   = mysqli_query($dba, $sqla);
@@ -18,7 +19,7 @@ $ra   = mysqli_query($dba, $sqla);
 if($ra == false)
 {
 	mysqli_close($dba);
-    $error = "Error: (" . mysql_errno() . ") " . mysql_error().")";
+    echo $error = "Error: (" . mysql_errno() . ") " . mysql_error().")";
 }
     mysqli_close($dba);
 	
@@ -33,7 +34,6 @@ if($_POST)
 		$estadocarta	= trim($_POST['estadocarta']);
 		$estadoventa	= trim($_POST['estadoventa']);
 		$fecha_alta     = date('Y-m-d');
-		
 		
 		$todo_ok = true;
 		
@@ -52,17 +52,23 @@ if($_POST)
 			$dba  = conectar();			 
 			$ra   = mysqli_query($dba, $sqla);
 			
+			$ultimoID = mysqli_insert_id($dba);
+
 			if($ra == false)
 			{
 				mysqli_close($dba);
 				$error = "Error: (" . mysql_errno() . ") " . mysql_error().")";
-			}
+			}else{#Si guardo bien
 				mysqli_close($dba);		
 			
-			$mensaje = "ALTA";
-			/*echo "<script language='javascript'>
-					 alert('REGISTRO CREADO');
-					window.location.href='alta-stock.php'; </script>";*/
+				$mensaje = "ALTA";
+				 
+				if(($estadoventa=="RESERVADO")||($estadoventa=="VENDIDO"))
+				{
+					$venta = new ventas;
+					$ventas->ventasCartas($ultimoID, $estadoventa, $estadoventa, $id_cliente);	
+				}
+			}//Fin si guardo bien
 		}
 	}//fin creo un nuevo
 }
@@ -109,6 +115,9 @@ if($_POST)
 
         <!-- Modernizr (browser feature detection library) & Respond.js (Enable responsive CSS code on browsers that don't support it, eg IE8) -->
         <script src="js/vendor/modernizr-respond.min.js"></script>
+        
+        <!-- select -->
+        <link href="css/bootstrap-select.css" rel="stylesheet" >
     </head>
 
     <!-- Add the class .fixed to <body> for a fixed layout on large resolutions (min: 1200px) -->
@@ -385,7 +394,7 @@ if($_POST)
                     <!-- END Navigation info -->
 
                     <!-- FORMULARIO -->
-                    <form action="" method="post" class="form-horizontal form-box">
+                    <form action="" method="post" class="form-horizontal form-box" id="formu">
                     <h4 class="form-box-header">STOCK</h4>
  					
                     <div class="form-box-content">	
@@ -395,16 +404,26 @@ if($_POST)
                             	<input type="text" id="nombrecarta" name="nombrecarta" class="form-control" autocomplete="off">
                             	<ol id="displayCarta"></ol>
                         	</div>
-                                    
+                             <div class="col-md-1" id="loadingName" style="display:none;">
+                             	<i class="fa fa-spinner fa-spin fa-2x"></i>
+                             </div>       
                         </div>
                                 
                         <div class="form-group">
                         	<label class="control-label col-md-2" for="example-username">Edición Carta</label>
                             <div class="col-md-7">
-                            	<select id="nombreedicion" name="nombreedicion" class="form-control" onChange="elegiredicion()">
-                                  	<option value="default">Seleccione</option>
-                                </select>
+								<input id="nombreedicion" name="nombreedicion" value=" " style="display:none" type="text">
+                                
+								<div class="desplegableSeleccion form-control" id="desplegableEdicion">
+                                    <span class="dtitulo" id="seleccionEdicion" ><span class="ddlabel" >SELECCIONE</span></span>
+                                    <div id="flechaDesplegable" onClick="muestroEdicionFlecha()"></div>
+                                </div>                                
+                                
+                                <div id="desplegableChild" class="desplegableChild" style="display:none;"></div>
                            </div>
+                           <div class="col-md-1" id="loadingEdicion" style="display:none;">
+                             	<i class="fa fa-spinner fa-spin fa-2x"></i>
+                             </div>
                         </div>
                                                        
                         <div class="form-group">
@@ -450,8 +469,8 @@ if($_POST)
                             <div class="col-md-7">
                             	<select id="estadoventa" name="estadoventa" class="form-control" onChange="elegiredicion()">
                             	  <option value="DISPONIBLE">DISPONIBLE</option>
-                            	  <option value="RESERVADO">RESERVADO</option>
-                            	  <option value="VENDIDO">VENDIDO</option>
+                            	  <!--<option value="RESERVADO">RESERVADO</option>
+                            	  <option value="VENDIDO">VENDIDO</option>-->
                                 </select>
                            </div>
                         </div> 
@@ -475,6 +494,7 @@ if($_POST)
                                 <th>Edición</th>
                                 <th><i class="fa fa-bolt"></i> Precio compra</th>
                                 <th>Estado Carta</th>
+                                <th>Estado Venta</th>
                               <th class="cell-small">Acción</th>
                             </tr>
                         </thead>
@@ -503,6 +523,7 @@ if($_POST)
 										?></a></td>
                                 <td><?php echo $precio_compra = trim($arr['precio_compra']); ?></td>
                                 <td><?php echo $estado_carta = trim($arr['estado_carta']); ?></td>
+                                <td><?php echo $estado_venta = trim($arr['estado_venta']); ?></td>
                                 <td class="text-center">
                                     <div class="btn-group">
                                     	<a href="mod-stock.php?acc=M&id=<?php echo $arr['id_stock']; ?>" data-toggle="tooltip" title="Modificar" class="btn btn-xs btn-success"><i class="fa fa-pencil"></i></a>
@@ -695,9 +716,8 @@ if($_POST)
         <!--[if lte IE 8]><script src="js/helpers/excanvas.min.js"></script><![endif]-->
 
         <!-- Include Jquery library from Google's CDN but if something goes wrong get Jquery from local file (Remove 'http:' if you have SSL) -->
-        <script src="js/vendor/jquery-1.11.1.min.js"></script>
-        <script>!window.jQuery && document.write(decodeURI('%3Cscript src="js/vendor/jquery-1.11.1.min.js"%3E%3C/script%3E'));</script>
-
+        <script src="js/vendor/jquery-2.1.3.min.js"></script>
+        
         <!-- Bootstrap.js -->
         <script src="js/vendor/bootstrap.min.js"></script>
 
@@ -710,51 +730,140 @@ if($_POST)
         
         <script src="js/sweetalert2.all.js"></script>
         <!-- Javascript code only for this page -->
+        
+        <script src="js/bootstrap-select.js"></script>
         <script>
+
+
+
+
+		function muestroEdicionFlecha()
+		{
+			var desplegableChild = document.getElementById('desplegableChild');
+			
+			if (desplegableChild.style.display === 'none')
+			{
+				desplegableChild.style.display = 'block';
+			} else {
+				desplegableChild.style.display = 'none';
+			}
+				
+		}
+		
+		function opcionEdicion(idEdicion)
+		{
+			var desple = document.getElementById('desplegableChild');
+
+			if (desplegableChild.style.display === 'none')
+			{
+				desplegableChild.style.display = 'block';
+			} else {
+				desplegableChild.style.display = 'none';
+			}
+			
+			var veoImagenEdicion = "desp" + idEdicion;
+			var ruta = $('#'+veoImagenEdicion+' img').attr('src');
+			var texto = $('#'+veoImagenEdicion).html();
+			//<img src="'+ruta+'" width="42px">
+			document.getElementById("desplegableEdicion").innerHTML = '<span class="resulEdicion">'+texto+'</span><div id="flechaDesplegable" onClick="muestroEdicionFlecha()"></div>';
+			
+			$('#nombreedicion').val(idEdicion);
+		}
 
 		var mensaje = "<?php echo $mensaje; ?>";
 		
 		if(mensaje=="ALTA")
 		{
 			swal('FELICITACIONES!!','Registro dado de alta','success');	
+			document.location.href = 'alta-stock.php';
+			
+		/*swal({ 
+		  title: "FELICITACIONES",
+		   text: "Registro dado de alta",
+			type: "success" 
+		  },
+		  function(){
+		   document.location.href = 'alta-stock.php';
+		});*/
 		}
 
 		function fillCarta(Value)
 		{ 
+			var loadingEdicion = document.getElementById("loadingEdicion");			
+			loadingEdicion.style.display = "block";
+					
 			$('#nombrecarta').val(Value);
 			$('#displayCarta').hide();
 			
+					
 			var nombrecarta = $('#nombrecarta').val();
 			
 			var toLoad= 'consultoedicionparastock.php?nombrecarta=' + nombrecarta;
-			//alert(toLoad);
-			$.post(toLoad,function (responseText){
-		 
-				$('#nombreedicion').html(responseText);
-				$('#nombreedicion').change();
+
+			$.post(toLoad,function (responseText)
+			{
+		 		loadingEdicion.style.display = "none";
+				$('#desplegableChild').html(responseText);
+				$('#desplegableChild').change();	
 			});
 			
 			$("#prodNombre").text(nombrecarta);
 		}
 		
 		
-		$(function () {
+		$(function () {//Ready
+  
+			var typingTimer; 
+			var doneTypingInterval = 500;  //time in ms, 5 second for example
+			var $input = $('#nombrecarta');
 			
- 				$('input#nombrecarta').keyup( function() {
-					   if( this.value.length > 2 ) 
-					   {
-						   var nombrecarta = $('#nombrecarta').val();
-							$.ajax({
-								type: "POST",
-								url: "consultocartaaltastock.php",
-								data: "nombrecarta="+ nombrecarta ,
-								success: function(html){
-									$("#displayCarta").html(html).show();
-								}
-							});
-					   }
-				});	
+			$input.on('keyup', function () {
+			  clearTimeout(typingTimer);
+			  typingTimer = setTimeout(doneTyping, doneTypingInterval);
+			});
+			
+			$input.on('keydown', function () {
+			  clearTimeout(typingTimer);
+			});
+			
+			function doneTyping () {
+
+				var nombrecarta = $('#nombrecarta').val();
 				
+				if( nombrecarta.length > 2 )  
+				{ 
+				
+					var loadingName = document.getElementById("loadingName");		
+					loadingName.style.display = "block";
+								
+					var nombrecarta = $('#nombrecarta').val();
+					$.ajax({
+						type: "POST",
+						url: "consultocartaaltastock.php",
+						data: "nombrecarta="+ nombrecarta ,
+						success: function(html){
+							$("#displayCarta").html(html).show();
+							loadingName.style.display = "none";
+						}
+					});
+					
+				 }	 			  
+			}
+				
+			$("#seleccionEdicion").click(function()
+			{
+				var desple = document.getElementById('desplegableChild');
+				
+				if(desple.style.display = 'none')
+				{
+					desple.style.display = 'block';	
+				}
+				/*else{
+					desple.style.display = 'none';	
+				}*/
+						
+			});
+						
 		});				
 		</script>
     </body>
